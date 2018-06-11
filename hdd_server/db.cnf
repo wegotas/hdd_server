@@ -1,0 +1,6 @@
+# db.cnf
+[client]
+database = sopena_hdds
+user = root
+password = sopena
+default-character-set = utf8

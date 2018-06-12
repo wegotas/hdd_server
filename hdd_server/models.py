@@ -13,7 +13,7 @@ class FormFactor(models.Model):
     form_factor_name = models.CharField(db_column='Form_factor_name', max_length=45)  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Form_factor'
 
 
@@ -22,7 +22,7 @@ class HddModels(models.Model):
     hdd_models_name = models.CharField(max_length=60)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Hdd_models'
 
 
@@ -31,7 +31,7 @@ class HddSizes(models.Model):
     hdd_sizes_name = models.CharField(max_length=45)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Hdd_sizes'
 
 
@@ -48,7 +48,7 @@ class Hdds(models.Model):
     f_form_factor = models.ForeignKey(FormFactor, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Hdds'
 
 
@@ -57,7 +57,7 @@ class LockType(models.Model):
     lock_type_name = models.CharField(max_length=45)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Lock_type'
 
 
@@ -67,7 +67,7 @@ class Lots(models.Model):
     date_of_lot = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Lots'
 
 
@@ -76,5 +76,5 @@ class Speed(models.Model):
     speed_name = models.CharField(max_length=45)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'Speed'

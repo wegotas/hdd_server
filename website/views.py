@@ -14,9 +14,9 @@ def index(request):
     if request.method == 'POST':
         form = UploadFileFrom(request.POST, request.FILES)
         if form.is_valid():
+            print("Valid")
             hw = HddWriter(request.FILES['file'])
             hw.save()
-            print("Valid")
             return render(request, 'success.html')
         else:
             print("Invalid")

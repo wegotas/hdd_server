@@ -1,6 +1,7 @@
 # from models import FormFactor, HddModels, HddSizes, Hdds, LockType, Lots, Speed
 from hdd_server.models import *
 from django.utils import timezone
+from django.conf import settings
 
 
 class HddWriter:
@@ -13,6 +14,7 @@ class HddWriter:
         lines_array = self._get_lines_array()
         for line in lines_array:
             line_array = line.split('@')
+
             model = self._save_and_get_models(line_array[2])
             size = self._save_and_get_size(line_array[3])
             lock_type = self._save_and_get_lock_type(line_array[4])
@@ -21,6 +23,8 @@ class HddWriter:
             self._save_hdd(line_array, model, size, lock_type, speed, form_factor)
 
     def _save_hdd(self, line_array, model, size, lock_type, speed, form_factor):
+        hdd_exists = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists()
+        print(hdd_exists)
         hdd = Hdds(
             hdd_serial=line_array[1],
             health=line_array[7].replace("%", ""),
@@ -42,10 +46,17 @@ class HddWriter:
         return linesArray
 
     def _save_and_set_lots(self):
+        print(timezone.now())
+        timezone.activate(settings.TIME_ZONE)
         try:
+            print(self.file._name)
+            # self.lot = Lots.objects.filter(lot_name=self.file._name)[0]
             self.lot = Lots.objects.get(lot_name=self.file._name)
         except Lots.DoesNotExist:
-            self.lot = Lots(lot_name=self.file._name, date_of_lot=timezone.now())
+            self.lot = Lots(
+                lot_name=self.file._name,
+                date_of_lot=timezone.now().today().date()
+            )
             self.lot.save()
 
     def _save_and_get_models(self, model):

@@ -64,7 +64,7 @@ class LockType(models.Model):
 class Lots(models.Model):
     lot_id = models.AutoField(primary_key=True)
     lot_name = models.CharField(max_length=45)
-    date_of_lot = models.DateTimeField(blank=True, null=True)
+    date_of_lot = models.DateField(blank=True, null=True)
 
     class Meta:
         managed = True

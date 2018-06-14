@@ -78,3 +78,13 @@ class Speed(models.Model):
     class Meta:
         managed = True
         db_table = 'Speed'
+
+
+class Document(models.Model):
+    document_id = models.AutoField(primary_key=True)
+    document = models.FileField()
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = True
+        db_table = 'Document'

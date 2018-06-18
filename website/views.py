@@ -8,6 +8,20 @@ from django.core.files.storage import FileSystemStorage
 
 # Create your views here.
 
+@csrf_exempt
+def index(request):
+    print("INDEX")
+    if request.method == 'GET':
+        print('GET method')
+        if 'lots' in request.GET:
+            lh = LotsHolder()
+            return render(request, 'index.html', {'lh': lh})
+        if 'hdds' in request.GET:
+            hh = HddHolder()
+            return render(request, 'index.html', {'hh': hh})
+    if request.method == 'POST':
+        print('POST method')
+    return render(request, 'index.html')
 
 @csrf_exempt
 def log(request):
@@ -16,11 +30,12 @@ def log(request):
         form = UploadFileFrom(request.POST, request.FILES)
         if form.is_valid():
             print("Valid")
-            hw = HddWriter(request.FILES['file'], request.FILES['file']._name)
+            hw = HddWriter(request.FILES['document'], request.FILES['document']._name)
             hw.save()
             return render(request, 'success.html')
         else:
             print("Invalid")
+            return render(request, 'uploader.html', {'form': form})
     else:
         form = UploadFileFrom()
         return render(request, 'uploader.html', {'form': form})
@@ -33,7 +48,7 @@ def pdf(request):
         form = UploadFileFrom(request.POST, request.FILES)
         if form.is_valid():
             print("Valid")
-            file = request.FILES['file']
+            file = request.FILES['document']
             fs = FileSystemStorage()
             filename = fs.save(file.name, file)
             uploaded_file_url = fs.url(filename)
@@ -41,6 +56,7 @@ def pdf(request):
             return render(request, 'success.html')
         else:
             print("Invalid")
+            return render(request, 'uploader.html', {'form': form})
     else:
         form = UploadFileFrom()
         return render(request, 'uploader.html', {'form': form})
@@ -62,6 +78,16 @@ def tar(request):
             return render(request, 'success.html')
         else:
             print("Invalid")
+            return render(request, 'uploader.html', {'form': form})
     else:
         form = DocumentForm()
         return render(request, 'uploader.html', {'form': form})
+
+@csrf_exempt
+def lot_content(request, int_index):
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+    lch = LotContentHolder(int_index)
+    return render(request, 'lot_content.html', {'lch': lch})

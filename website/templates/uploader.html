@@ -5,8 +5,10 @@
     <title>Index page</title>
 </head>
 <body>
+    <div>{{ form.errors }}</div>
+    <div>{{ form.non_field_errors }}</div>
     <form method="post" enctype="multipart/form-data">
-        <input type="file" name="file"/>
+        <input type="file" name="document"/>
         <button type="submit">Submit</button>
     </form>
 </body>

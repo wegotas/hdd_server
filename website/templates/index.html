@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    <script type="text/javascript" src="{% static 'index.js' %}"></script>
+</head>
+<body>
+    <form>
+        <button name="lots" value="True">Lots table</button>
+        <button name="hdds" value="True">Hdds table</button>
+        {% if lh.lots is not None %}
+        <table border="1">
+            <tr>
+                <th>Lot Name:</th>
+                <th>Date:</th>
+                <th>Count:</th>
+                <th>Actions:</th>
+            </tr>
+            {% for lot in lh.lots %}
+            <tr>
+                <td>{{ lot.lot_name }}</td>
+                <td>{{ lot.date_of_lot|date:"c" }}</td>
+                <td>{{ lot.count }}</td>
+                <td><button type="button" onclick="lot_content({{ lot.lot_id }})">Content</button></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+        {% if hh.hdds %}
+        <table border="1">
+            <tr>
+                <th>Serial</th>
+                <th>Model</th>
+                <th>Size</th>
+                <th>Lock state</th>
+                <th>Speed</th>
+                <th>Form factor</th>
+                <th>Health</th>
+                <th>Days on</th>
+            </tr>
+            {% for hdd in hh.hdds %}
+            <tr>
+                <td>{{ hdd.hdd_serial }}</td>
+                <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
+                <td>{{ hdd.f_hdd_sizes.hdd_sizes_name }}</td>
+                <td>{{ hdd.f_lock_state.lock_state_name }}</td>
+                <td>{{ hdd.f_speed.speed_name }}</td>
+                <td>{{ hdd.f_form_factor.form_factor_name }}</td>
+                <td>{{ hdd.health }}%</td>
+                <td>{{ hdd.days_on }} d.</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </form>
+</body>
+</html>

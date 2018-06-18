@@ -23,12 +23,12 @@ class HddWriter:
 
             model = self._save_and_get_models(line_array[2])
             size = self._save_and_get_size(line_array[3])
-            lock_type = self._save_and_get_lock_type(line_array[4])
+            lock_state = self._save_and_get_lock_state(line_array[4])
             speed = self._save_and_get_speed(line_array[5])
             form_factor = self._save_and_get_form_factor(line_array[6])
-            self._save_hdd(line_array, model, size, lock_type, speed, form_factor)
+            self._save_hdd(line_array, model, size, lock_state, speed, form_factor)
 
-    def _save_hdd(self, line_array, model, size, lock_type, speed, form_factor):
+    def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
         if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
             logging.debug("Such hdd allready exists")
             existing_hdd = Hdds.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
@@ -42,7 +42,7 @@ class HddWriter:
                 f_lot=self.lot,
                 f_hdd_models=model,
                 f_hdd_sizes=size,
-                f_lock_type=lock_type,
+                f_lock_state=lock_state,
                 f_speed=speed,
                 f_form_factor=form_factor
             )
@@ -55,7 +55,7 @@ class HddWriter:
                 f_lot=self.lot,
                 f_hdd_models=model,
                 f_hdd_sizes=size,
-                f_lock_type=lock_type,
+                f_lock_state=lock_state,
                 f_speed=speed,
                 f_form_factor=form_factor
             )
@@ -89,8 +89,8 @@ class HddWriter:
         size_to_return = HddSizes.objects.get_or_create(hdd_sizes_name=size)[0]
         return size_to_return
 
-    def _save_and_get_lock_type(self, lock):
-        lock_to_return = LockType.objects.get_or_create(lock_type_name=lock)[0]
+    def _save_and_get_lock_state(self, lock):
+        lock_to_return = LockState.objects.get_or_create(lock_state_name=lock)[0]
         return lock_to_return
 
     def _save_and_get_speed(self, speed):
@@ -145,3 +145,36 @@ def on_start():
         tid = Thread(target=start_observer)
         tid.start()
     """
+
+class LotHolder:
+
+    def __init__(self, lot_id, lot_name, date_of_lot, count):
+        self.lot_id = lot_id
+        self.lot_name = lot_name
+        self.date_of_lot = date_of_lot
+        self.count = count
+
+class LotsHolder:
+
+    def __init__(self):
+        # self.lots = Lots.objects.all()
+        # self.lots = []
+        lots = Lots.objects.all()
+        if lots:
+            self.lots = []
+        for lot in lots:
+            count = Hdds.objects.filter(f_lot=lot.lot_id).count()
+            lh = LotHolder(lot.lot_id, lot.lot_name, lot.date_of_lot, count)
+            self.lots.append(lh)
+
+class HddHolder:
+
+    def __init__(self):
+        self.hdds = Hdds.objects.all()
+
+
+class LotContentHolder:
+
+    def __init__(self, index):
+        self.lot = Lots.objects.get(lot_id=index)
+        self.hdds = Hdds.objects.filter(f_lot=self.lot)

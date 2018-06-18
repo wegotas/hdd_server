@@ -43,7 +43,7 @@ class Hdds(models.Model):
     f_lot = models.ForeignKey('Lots', models.DO_NOTHING, blank=True, null=True)
     f_hdd_models = models.ForeignKey(HddModels, models.DO_NOTHING, blank=True, null=True)
     f_hdd_sizes = models.ForeignKey(HddSizes, models.DO_NOTHING, blank=True, null=True)
-    f_lock_type = models.ForeignKey('LockType', models.DO_NOTHING, blank=True, null=True)
+    f_lock_state = models.ForeignKey('LockState', models.DO_NOTHING, blank=True, null=True)
     f_speed = models.ForeignKey('Speed', models.DO_NOTHING, blank=True, null=True)
     f_form_factor = models.ForeignKey(FormFactor, models.DO_NOTHING, blank=True, null=True)
 
@@ -52,13 +52,13 @@ class Hdds(models.Model):
         db_table = 'Hdds'
 
 
-class LockType(models.Model):
-    lock_type_id = models.AutoField(primary_key=True)
-    lock_type_name = models.CharField(max_length=45)
+class LockState(models.Model):
+    lock_state_id = models.AutoField(primary_key=True)
+    lock_state_name = models.CharField(max_length=45)
 
     class Meta:
         managed = True
-        db_table = 'Lock_type'
+        db_table = 'Lock_state'
 
 
 class Lots(models.Model):
@@ -83,7 +83,7 @@ class Speed(models.Model):
 class Document(models.Model):
     document_id = models.AutoField(primary_key=True)
     document = models.FileField()
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_at = models.DateField(auto_now_add=True)
 
     class Meta:
         managed = True

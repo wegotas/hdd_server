@@ -15,8 +15,20 @@
         <table border="1">
             <tr>
                 <th>Lot Name:</th>
-                <th>Date:</th>
-                <th>Count:</th>
+                <th>Date:
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
+                <th>Count:
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
                 <th>Actions:</th>
             </tr>
             {% for lot in lh.lots %}
@@ -32,14 +44,57 @@
         {% if hh.hdds %}
         <table border="1">
             <tr>
-                <th>Serial</th>
-                <th>Model</th>
-                <th>Size</th>
-                <th>Lock state</th>
-                <th>Speed</th>
-                <th>Form factor</th>
-                <th>Health</th>
-                <th>Days on</th>
+                <th>Serial:
+                </th>
+                <th>Model
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
+                <th>Size
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
+                <th>Lock state
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
+                <th>Speed
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
+                <th>Form factor
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
+                <th>Health
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
+                <th>Days on
+                    <button type="button" onclick="alert('filter placeholder')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                </th>
             </tr>
             {% for hdd in hh.hdds %}
             <tr>

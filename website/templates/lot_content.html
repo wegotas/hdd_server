@@ -1,17 +1,21 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Lot content</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    <script type="text/javascript" src="{% static 'index.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
 </head>
 <body>
-    <div style="z-index: 1;">
-        <div style="float: left; margin: 10px;">Lot id: {{ lch.lot.lot_id }}</div>
-        <div style="float: left; margin: 10px;">Lot name: {{ lch.lot.lot_name }}</div>
-        <div style="float: left; margin: 10px;">Date {{ lch.lot.date_of_lot|date:"c" }}</div>
+    <div class="header">
+        <div class="textdiv">Lot id: {{ lch.lot.lot_id }}</div>
+        <div class="textdiv">Lot name: {{ lch.lot.lot_name }}</div>
+        <div class="textdiv">Date {{ lch.lot.date_of_lot|date:"c" }}</div>
     </div>
-    <div style="float: top; padding-top: 40px">
-        <table border="1">
+    <div class="tableDiv">
+        <table class="mainTable">
             <tr>
                 <th>Serial
                     <button type="button" onclick="alert('filter placeholder')">

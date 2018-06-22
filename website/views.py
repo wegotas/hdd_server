@@ -8,6 +8,17 @@ from django.core.files.storage import FileSystemStorage
 
 # Create your views here.
 
+
+@csrf_exempt
+def lot_content(request, int_index):
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        lch = LotContentHolder(int_index)
+        return render(request, 'lot_content.html', {'lch': lch})
+
+
 @csrf_exempt
 def index(request):
     print("INDEX")
@@ -15,9 +26,11 @@ def index(request):
         print('GET method')
         if 'lots' in request.GET:
             lh = LotsHolder()
+            lh.filter(request.GET.copy())
             return render(request, 'index.html', {'lh': lh})
         if 'hdds' in request.GET:
             hh = HddHolder()
+            hh.filter(request.GET.copy())
             return render(request, 'index.html', {'hh': hh})
     if request.method == 'POST':
         print('POST method')
@@ -82,12 +95,3 @@ def tar(request):
     else:
         form = DocumentForm()
         return render(request, 'uploader.html', {'form': form})
-
-@csrf_exempt
-def lot_content(request, int_index):
-    if request.method == 'POST':
-        print('POST method')
-    if request.method == 'GET':
-        print('GET method')
-    lch = LotContentHolder(int_index)
-    return render(request, 'lot_content.html', {'lch': lch})

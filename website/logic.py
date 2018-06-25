@@ -198,11 +198,19 @@ class LotsHolder:
         for key in keys:
             if key in data_dict:
                 new_dict[key] = data_dict.pop(key)
-        print(new_dict)
-        '''
         for key, value in new_dict.items():
-            if key == '':
-        '''
+            if key == 'nam-af':
+                for lot in self.lots[:]:
+                    if not lot.lot_name in new_dict[key]:
+                        self.lots.remove(lot)
+            elif key == 'dat-af':
+                for lot in self.lots[:]:
+                    if not str(lot.date_of_lot) in new_dict[key]:
+                        self.lots.remove(lot)
+            elif key == 'cnt-af':
+                for lot in self.lots[:]:
+                    if not str(lot.count) in new_dict[key]:
+                        self.lots.remove(lot)
 
 
 class HddHolder:
@@ -337,3 +345,4 @@ class LotContentHolder:
     def __init__(self, index):
         self.lot = Lots.objects.get(lot_id=index)
         self.hdds = Hdds.objects.filter(f_lot=self.lot)
+        self.autoFilters = HddAutoFilterOptions(self.hdds)

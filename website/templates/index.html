@@ -67,7 +67,7 @@
                                     <input type="checkbox" onclick="afSelect(this)">
                                 </div>
                                 <div class="af-chkbxtitle">
-                                    {{ afChoice }}
+                                    {{ afChoice|date:"c" }}
                                 </div>
                             </div>
                             {% endfor %}
@@ -118,7 +118,8 @@
         {% if hh.hdds %}
         <table border="1">
             <tr>
-                <th><div class="tooltip">Serial:
+                <th>
+                    <div class="tooltip">Serial:
                         <span class="tooltiptext">Unique ID set up by manufacturer.</span>
                     </div>
                     <button type="button" onclick="autoFilterMenu('af-Serial')">

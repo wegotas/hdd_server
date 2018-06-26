@@ -346,3 +346,28 @@ class LotContentHolder:
         self.lot = Lots.objects.get(lot_id=index)
         self.hdds = Hdds.objects.filter(f_lot=self.lot)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
+
+class HddToEdit:
+
+    def __init__(self, index):
+        self.hdd = Hdds.objects.get(hdd_id=index)
+        self.get_sizes()
+        self.get_states()
+        self.get_speeds()
+        self.get_form_factors()
+
+    def get_sizes(self):
+        self.sizes = [record[0] for record in HddSizes.objects.values_list('hdd_sizes_name')]
+        self.sizes.sort()
+
+    def get_states(self):
+        self.states = [record[0] for record in LockState.objects.values_list('lock_state_name')]
+        self.sizes.sort()
+
+    def get_speeds(self):
+        self.speeds = [record[0] for record in Speed.objects.values_list('speed_name')]
+        self.speeds.sort()
+
+    def get_form_factors(self):
+        self.form_factors = [record[0] for record in FormFactor.objects.values_list('form_factor_name')]
+        self.form_factors.sort()

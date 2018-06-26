@@ -101,24 +101,30 @@ class AFManager {
     var splittedArray = url.split("?");
     var mainURL = splittedArray[0];
     var attributesString = splittedArray[1];
-    console.log(mainURL);
-    console.log(attributesString);
-    var attributes = attributesString.split("&");
-    console.log(attributes);
-    for (var i = attributes.length -1; i > -1; i--) {
-      console.log("Attribute: " + attributes[i]);
-      for (var j = 0; j < this.possible_fieldnames.length; j++) {
-        console.log("Fieldname: " + this.possible_fieldnames[j]);
-        if ( attributes[i].includes(this.possible_fieldnames[j])) {
-          console.log("Removing");
-          attributes.splice(i, 1)
-          break;
-        }
-      }
+    if (attributesString == null) {
+    	console.log('No attributes');
+    	return mainURL + '?' + this.getAFURLaddon();
     }
-    console.log(attributes);
-    console.log(this.getAFURLaddon());
-    return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();
+    else {
+	    console.log(mainURL);
+	    console.log(attributesString);
+	    var attributes = attributesString.split("&");
+	    console.log(attributes);
+	    for (var i = attributes.length -1; i > -1; i--) {
+	    	console.log("Attribute: " + attributes[i]);
+	      	for (var j = 0; j < this.possible_fieldnames.length; j++) {
+	        	console.log("Fieldname: " + this.possible_fieldnames[j]);
+	        	if ( attributes[i].includes(this.possible_fieldnames[j])) {
+	          		console.log("Removing");
+	          		attributes.splice(i, 1)
+	          		break;
+	        	}
+	      	}
+	    }
+	    console.log(attributes);
+	    console.log(this.getAFURLaddon());
+	    return mainURL + "?"+ attributes.join("&") +"&" + this.getAFURLaddon();	
+    }
   }
 
   getAFURLaddon() {
@@ -208,6 +214,18 @@ function applyAFs() {
   loadPage(newURL);
 }
 
+function editHdd(index) {
+	parts = location.href.split('/');
+	parts.pop();
+	parts.pop();
+	parts.pop();
+	var editHddWindow = window.open(parts.join('/') + '/hdd_edit/'+index+'/', "", "width=400,height=650");
+}
+
 function loadPage(newURL) {
   window.location = newURL;
+}
+
+function isNumber(event) {
+	return (event.keyCode=>48 && event.keyCode<=57)
 }

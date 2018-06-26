@@ -10,3 +10,10 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ('document',)
+
+
+class HddToEditForm(forms.Form):
+    serial = forms.CharField()
+    model = forms.CharField()
+
+

@@ -36,6 +36,20 @@ def index(request):
         print('POST method')
     return render(request, 'index.html')
 
+
+@csrf_exempt
+def hdd_edit(request, int_index):
+    print('hdd_edit')
+    print(int_index)
+    if request.method == 'POST':
+        print('POST method')
+        return render(request, 'success.html')
+    if request.method == 'GET':
+        print('GET method')
+        hte = HddToEdit(int_index)
+        return render(request, 'hdd_edit.html', {'hte': hte})
+
+
 @csrf_exempt
 def log(request):
     print("log upload")

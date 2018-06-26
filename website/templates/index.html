@@ -353,6 +353,7 @@
                         </div>
                     </div>
                 </th>
+                <th>Actions:</th>
             </tr>
             {% for hdd in hh.hdds %}
             <tr>
@@ -364,6 +365,9 @@
                 <td>{{ hdd.f_form_factor.form_factor_name }}</td>
                 <td>{{ hdd.health }}%</td>
                 <td>{{ hdd.days_on }} d.</td>
+                <td>
+                    <button type="button" onclick="alert('edit placeholder')">Edit</button>
+                </td>
             </tr>
             {% endfor %}
         </table>

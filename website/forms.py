@@ -12,8 +12,4 @@ class DocumentForm(forms.ModelForm):
         fields = ('document',)
 
 
-class HddToEditForm(forms.Form):
-    serial = forms.CharField()
-    model = forms.CharField()
-
 

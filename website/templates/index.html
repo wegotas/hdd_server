@@ -14,6 +14,7 @@
         <button name="hdds" value="True">Hdds table</button>
         <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter out</button></div>
         {% if lh.lots is not None %}
+        <div><button type="button" onclick="importNewLot(1)">Import new lot</button></div>
         <table class="mainTable">
             <tr>
                 <th>Lot Name:
@@ -366,7 +367,7 @@
                 <td>{{ hdd.health }}%</td>
                 <td>{{ hdd.days_on }} d.</td>
                 <td>
-                    <button type="button" onclick="alert('edit placeholder')">Edit</button>
+                    <button type="button" onclick="editHdd({{ hdd.hdd_id }}, 1)">Edit</button>
                 </td>
             </tr>
             {% endfor %}

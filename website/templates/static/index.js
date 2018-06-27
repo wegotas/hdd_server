@@ -214,12 +214,22 @@ function applyAFs() {
   loadPage(newURL);
 }
 
-function editHdd(index) {
-	parts = location.href.split('/');
-	parts.pop();
-	parts.pop();
-	parts.pop();
+function editHdd(index, URLremovalToken) {
+	URLtoWorkWith = location.href.slice(0, -1);
+	parts = URLtoWorkWith.split('/');
+	for (var i =0; i<URLremovalToken; i++) {
+		parts.pop();
+	}
 	var editHddWindow = window.open(parts.join('/') + '/hdd_edit/'+index+'/', "", "width=400,height=650");
+}
+
+function importNewLot(URLremovalToken) {
+	URLtoWorkWith = location.href;
+	parts = URLtoWorkWith.split('/');
+	for (var i =0; i<URLremovalToken; i++) {
+		parts.pop();
+	}
+	var importTarWindow = window.open(parts.join('/') + '/tar/', "", "width=360,height=100");
 }
 
 function loadPage(newURL) {
@@ -227,5 +237,6 @@ function loadPage(newURL) {
 }
 
 function isNumber(event) {
-	return (event.keyCode=>48 && event.keyCode<=57)
+	keycode = event.keyCode;
+	return (keycode=>48 && keycode<=57);
 }

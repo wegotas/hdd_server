@@ -40,13 +40,13 @@ def index(request):
 @csrf_exempt
 def hdd_edit(request, int_index):
     print('hdd_edit')
-    print(int_index)
+    hte = HddToEdit(int_index)
     if request.method == 'POST':
         print('POST method')
+        hte.process_edit(int_index, request.POST.copy())
         return render(request, 'success.html')
     if request.method == 'GET':
         print('GET method')
-        hte = HddToEdit(int_index)
         return render(request, 'hdd_edit.html', {'hte': hte})
 
 
@@ -96,7 +96,8 @@ def tar(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             print("Valid")
-            form.save()
+            print(form.data)
+            # form.save()
             # file = request.FILES['file']
             # fs = FileSystemStorage()
             # filename = fs.save(file.name, file)

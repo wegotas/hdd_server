@@ -371,3 +371,53 @@ class HddToEdit:
     def get_form_factors(self):
         self.form_factors = [record[0] for record in FormFactor.objects.values_list('form_factor_name')]
         self.form_factors.sort()
+
+    def process_edit(self, index, data_dict):
+        print(index)
+        model = self.get_or_save_model(data_dict.pop('model')[0])
+        size = self.get_or_save_size(data_dict.pop('size')[0])
+        state = self.get_or_save_state(data_dict.pop('state')[0])
+        speed = self.get_or_save_speed(data_dict.pop('speed')[0])
+        form_factor = self.get_or_save_form_factor(data_dict.pop('form_factor')[0])
+        hdd = Hdds.objects.get(hdd_id=index)
+        """
+        hdd(
+            hdd_serial=data_dict.pop('serial')[0],
+            health=data_dict.pop('health')[0],
+            days_on=data_dict.pop('days')[0],
+            f_hdd_models=model,
+            f_hdd_sizes=size,
+            f_lock_state=state,
+            f_speed=speed,
+            f_form_factor=form_factor,
+        )
+        """
+        hdd.hdd_serial = data_dict.pop('serial')[0]
+        hdd.health = data_dict.pop('health')[0]
+        hdd.days_on = data_dict.pop('days')[0]
+        hdd.f_hdd_models = model
+        hdd.f_hdd_sizes = size
+        hdd.f_lock_state = state
+        hdd.f_speed = speed
+        hdd.f_form_factor = form_factor
+        hdd.save()
+
+    def get_or_save_model(self, model_text):
+        model = HddModels.objects.get_or_create(hdd_models_name=model_text)[0]
+        return model
+
+    def get_or_save_size(self, size_text):
+        size = HddSizes.objects.get_or_create(hdd_sizes_name=size_text)[0]
+        return size
+
+    def get_or_save_state(self, state_text):
+        state = LockState.objects.get_or_create(lock_state_name=state_text)[0]
+        return state
+
+    def get_or_save_speed(self, speed_text):
+        speed = Speed.objects.get_or_create(speed_name=speed_text)[0]
+        return speed
+
+    def get_or_save_form_factor(self, form_factor_text):
+        form_factor = FormFactor.objects.get_or_create(form_factor_name=form_factor_text)[0]
+        return form_factor

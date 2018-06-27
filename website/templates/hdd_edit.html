@@ -8,7 +8,7 @@
     <script type="text/javascript" src="{% static 'index.js' %}"></script>
 </head>
 <body>
-    <form>
+    <form method="post">
         <div class="header">
             <div class="textdiv">Lot id: {{ hte.hdd.f_lot.lot_id }}</div>
             <div class="textdiv">Lot name: {{ hte.hdd.f_lot.lot_name }}</div>
@@ -63,7 +63,7 @@
                     <select name="speed">
                         {% for speed in hte.speeds %}
                         <option
-                            value="{{ state }}"
+                            value="{{ speed }}"
                             {% if speed == hte.hdd.f_speed.speed_name %} selected="selected"{% endif %}
                         >{{ speed }}
                         </option>
@@ -74,7 +74,7 @@
             <tr>
                 <td align="right">Form factor:</td>
                 <td>
-                    <select name="speed">
+                    <select name="form_factor">
                         {% for form_factor in hte.form_factors %}
                         <option
                             value="{{ form_factor }}"

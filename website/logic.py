@@ -7,6 +7,7 @@ from watchdog.events import PatternMatchingEventHandler
 import logging
 import os
 from threading import Thread
+import tarfile
 
 
 class HddWriter:
@@ -380,18 +381,6 @@ class HddToEdit:
         speed = self.get_or_save_speed(data_dict.pop('speed')[0])
         form_factor = self.get_or_save_form_factor(data_dict.pop('form_factor')[0])
         hdd = Hdds.objects.get(hdd_id=index)
-        """
-        hdd(
-            hdd_serial=data_dict.pop('serial')[0],
-            health=data_dict.pop('health')[0],
-            days_on=data_dict.pop('days')[0],
-            f_hdd_models=model,
-            f_hdd_sizes=size,
-            f_lock_state=state,
-            f_speed=speed,
-            f_form_factor=form_factor,
-        )
-        """
         hdd.hdd_serial = data_dict.pop('serial')[0]
         hdd.health = data_dict.pop('health')[0]
         hdd.days_on = data_dict.pop('days')[0]
@@ -421,3 +410,117 @@ class HddToEdit:
     def get_or_save_form_factor(self, form_factor_text):
         form_factor = FormFactor.objects.get_or_create(form_factor_name=form_factor_text)[0]
         return form_factor
+
+
+class TarProcessor:
+
+    def __init__(self, inMemoryFile):
+        self.lot_name = inMemoryFile._name.replace('.tar', '')
+        self.tar = tarfile.open(fileobj=inMemoryFile.file)
+
+    def process_data(self):
+        # self._save_and_set_lots()
+        for member in self.tar.getmembers():
+            if '.txt' in member.name:
+                print(member.name)
+                file = self.tar.extractfile(member)
+                for bline in file.readlines():
+                    # print(bline)
+                    line = bline.decode('utf-8')
+                    line_array = line.split('@')
+                    if self._exists_in_tar(line_array[1]):
+                        print('exists')
+                    else:
+                        print('Doesnt exist')
+                    """
+                    model = line_array[2]
+                    print('Model: ' + model)
+                    size = line_array[3]
+                    print('Size: ' + size)
+                    lock_state = line_array[4]
+                    print('lock state: ' + lock_state)
+                    speed = line_array[5]
+                    print('speed: ' + speed)
+                    form_factor = line_array[6]
+                    print('form factor: ' + form_factor)
+                    """
+                    '''
+                    model = self._save_and_get_models(line_array[2])
+                    size = self._save_and_get_size(line_array[3])
+                    lock_state = self._save_and_get_lock_state(line_array[4])
+                    speed = self._save_and_get_speed(line_array[5])
+                    form_factor = self._save_and_get_form_factor(line_array[6])
+                    self._save_hdd(line_array, model, size, lock_state, speed, form_factor)
+                    '''
+
+    def _exists_in_tar(self, serial):
+        for member in self.tar.getmembers():
+            if '(S-N '+serial+')' in member.name:
+                print(serial)
+                print(member.name)
+                return True
+        print(serial + ' FILE CONTAINING THIS SERIAL WAS NOT FOUND')
+        return False
+
+    def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
+        if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
+            logging.debug("Such hdd allready exists")
+            existing_hdd = Hdds.objects.get(hdd_serial=line_array[1], f_hdd_models=model)
+            logging.debug(existing_hdd)
+            logging.debug(existing_hdd.__dict__)
+            hdd = Hdds(
+                hdd_id=existing_hdd.hdd_id,
+                hdd_serial=line_array[1],
+                health=line_array[7].replace("%", ""),
+                days_on=line_array[8],
+                f_lot=self.lot,
+                f_hdd_models=model,
+                f_hdd_sizes=size,
+                f_lock_state=lock_state,
+                f_speed=speed,
+                f_form_factor=form_factor
+            )
+            hdd.save()
+        else:
+            hdd = Hdds(
+                hdd_serial=line_array[1],
+                health=line_array[7].replace("%", ""),
+                days_on=line_array[8],
+                f_lot=self.lot,
+                f_hdd_models=model,
+                f_hdd_sizes=size,
+                f_lock_state=lock_state,
+                f_speed=speed,
+                f_form_factor=form_factor
+            )
+            hdd.save()
+
+    def _save_and_set_lots(self):
+        try:
+            self.lot = Lots.objects.get(lot_name=self.lot_name)
+        except Lots.DoesNotExist:
+            self.lot = Lots(
+                lot_name=self.self.lot_name,
+                date_of_lot=timezone.now().today().date()
+            )
+            self.lot.save()
+
+    def _save_and_get_models(self, model):
+        model_to_return = HddModels.objects.get_or_create(hdd_models_name=model)[0]
+        return model_to_return
+
+    def _save_and_get_size(self, size):
+        size_to_return = HddSizes.objects.get_or_create(hdd_sizes_name=size)[0]
+        return size_to_return
+
+    def _save_and_get_lock_state(self, lock):
+        lock_to_return = LockState.objects.get_or_create(lock_state_name=lock)[0]
+        return lock_to_return
+
+    def _save_and_get_speed(self, speed):
+        speed_to_return = Speed.objects.get_or_create(speed_name=speed)[0]
+        return speed_to_return
+
+    def _save_and_get_form_factor(self, form_factor):
+        form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
+        return form_factor_to_return

@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from website.forms import *
 from website.logic import *
 from django.core.files.storage import FileSystemStorage
+import tarfile
 
 # Create your views here.
 
@@ -96,7 +97,8 @@ def tar(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             print("Valid")
-            print(form.data)
+            tp = TarProcessor(request.FILES['document'])
+            tp.process_data()
             # form.save()
             # file = request.FILES['file']
             # fs = FileSystemStorage()

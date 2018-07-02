@@ -8,6 +8,7 @@ import logging
 import os
 from threading import Thread
 import tarfile
+import datetime
 
 
 class HddWriter:
@@ -411,6 +412,23 @@ class HddToEdit:
         form_factor = FormFactor.objects.get_or_create(form_factor_name=form_factor_text)[0]
         return form_factor
 
+'''
+class TarSerialProcessor:
+
+    def __init__(self, tar_processor, serial):
+        self.exists = False
+        for member in tar_processor.tar.getmembers():
+            if '(S-N '+serial+')' in member.name:
+                self.exists = True
+                file = tar_processor.tar.extractfile(member)
+                print(file)
+                new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), tar_processor.lot_name+'.tar')
+                print(new_tarfile_loc)
+                with tarfile.open(new_tarfile_loc, 'a') as new_tar:
+                    new_tar.addfile(member, file)
+                break
+        self.exists = False
+'''
 
 class TarProcessor:
 
@@ -424,43 +442,49 @@ class TarProcessor:
             if '.txt' in member.name:
                 print(member.name)
                 file = self.tar.extractfile(member)
-                for bline in file.readlines():
-                    # print(bline)
-                    line = bline.decode('utf-8')
-                    line_array = line.split('@')
-                    if self._exists_in_tar(line_array[1]):
-                        print('exists')
-                    else:
-                        print('Doesnt exist')
-                    """
-                    model = line_array[2]
-                    print('Model: ' + model)
-                    size = line_array[3]
-                    print('Size: ' + size)
-                    lock_state = line_array[4]
-                    print('lock state: ' + lock_state)
-                    speed = line_array[5]
-                    print('speed: ' + speed)
-                    form_factor = line_array[6]
-                    print('form factor: ' + form_factor)
-                    """
-                    '''
-                    model = self._save_and_get_models(line_array[2])
-                    size = self._save_and_get_size(line_array[3])
-                    lock_state = self._save_and_get_lock_state(line_array[4])
-                    speed = self._save_and_get_speed(line_array[5])
-                    form_factor = self._save_and_get_form_factor(line_array[6])
-                    self._save_hdd(line_array, model, size, lock_state, speed, form_factor)
-                    '''
+                with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
+                    textToWrite = '* ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
+                    isMissingPDF = False
+                    for bline in file.readlines():
+                        line = bline.decode('utf-8')
+                        line_array = line.split('@')
+                        model_text = line_array[2]
+                        tarmember = self.get_tar_member_by_serial(line_array[1])
+                        if self._hdd_exists(line_array, model_text):
+                            print('Record exists')
+                            if tarmember is not None:
+                                print('True', 'True')
+                            else:
+                                print('True', 'False')
+                        else:
+                            print('No such record')
+                            if tarmember is not None:
+                                print('False', 'True')
+                            else:
+                                print('False', 'False')
+                    textToWrite += '===============================================\r\n'
+                    if isMissingPDF:
+                        logfile.write(textToWrite)
+
+    def get_tar_member_by_serial(self, serial):
+        for member in self.tar.getmembers():
+            if '(S-N ' + serial + ')' in member.name:
+                return member
+        return None
 
     def _exists_in_tar(self, serial):
         for member in self.tar.getmembers():
             if '(S-N '+serial+')' in member.name:
-                print(serial)
-                print(member.name)
                 return True
-        print(serial + ' FILE CONTAINING THIS SERIAL WAS NOT FOUND')
         return False
+
+    def _hdd_exists(self, line_array, model_text):
+        print(line_array[1])
+        print(model_text)
+        model = HddModels.objects.get_or_create(hdd_models_name=model_text)[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
+        return hdd.exists()
+        # return Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists()
 
     def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
         if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():

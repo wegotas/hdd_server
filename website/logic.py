@@ -182,7 +182,6 @@ class LotsHolder:
         self.lots = self._get_lots()
         self.autoFilters = LotsHolderAutoFilter(self.lots)
 
-
     def _get_lots(self):
         lots = Lots.objects.all()
         lots_to_return = []
@@ -349,6 +348,7 @@ class LotContentHolder:
         self.hdds = Hdds.objects.filter(f_lot=self.lot)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
 
+
 class HddToEdit:
 
     def __init__(self, index):
@@ -437,51 +437,92 @@ class TarProcessor:
         self.tar = tarfile.open(fileobj=inMemoryFile.file)
 
     def process_data(self):
-        # self._save_and_set_lots()
+        self._save_and_set_lots()
         for member in self.tar.getmembers():
             if '.txt' in member.name:
                 print(member.name)
                 file = self.tar.extractfile(member)
                 with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
                     textToWrite = '* ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
-                    isMissingPDF = False
-                    for bline in file.readlines():
-                        line = bline.decode('utf-8')
-                        line_array = line.split('@')
-                        model_text = line_array[2]
-                        tarmember = self.get_tar_member_by_serial(line_array[1])
-                        if self._hdd_exists(line_array, model_text):
-                            print('Record exists')
-                            if tarmember is not None:
-                                print('True', 'True')
+                    isMissing = False
+                    new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
+                    with tarfile.open(new_tarfile_loc, 'a') as new_tar:
+                        for bline in file.readlines():
+                            line = bline.decode('utf-8')
+                            line_array = line.split('@')
+                            if self.isValid(line_array):
+                                tarmember = self.get_tar_member_by_serial(line_array)
+                                if self._hdd_exists(line_array):
+                                    # print('Record exists')
+                                    if tarmember is not None:
+                                        print('True', 'True')
+                                        isMissing = True
+                                        textToWrite += 'SN: ' + line_array[1] + '| info updated. Old file association deleted\r\n'
+                                    else:
+                                        print('True', 'False')
+                                        isMissing = True
+                                        textToWrite += 'SN: ' + line_array[1] + '| info updated. Old pdf deleted\r\n'
+                                else:
+                                    # print('No such record')
+                                    if tarmember is not None:
+                                        print('False', 'True')
+                                        file = self.tar.extractfile(tarmember)
+                                        filename = tarmember.name
+                                        new_tar.addfile(tarmember, file)
+                                        self._save_new_hdd(line_array, filename)
+                                    else:
+                                        print('False', 'False')
+                                        isMissing = True
+                                        textToWrite += 'SN: ' + line_array[1] + '| skipped. Not present in database. No file associated.\r\n'
                             else:
-                                print('True', 'False')
-                        else:
-                            print('No such record')
-                            if tarmember is not None:
-                                print('False', 'True')
-                            else:
-                                print('False', 'False')
-                    textToWrite += '===============================================\r\n'
-                    if isMissingPDF:
-                        logfile.write(textToWrite)
+                                textToWrite += 'SN: ' + line_array[1] + '| values which should be numbers, are not.\r\n'
+                        textToWrite += '===============================================\r\n'
+                        if isMissing:
+                            logfile.write(textToWrite)
 
-    def get_tar_member_by_serial(self, serial):
+    def get_tar_member_by_serial(self, line_array):
         for member in self.tar.getmembers():
-            if '(S-N ' + serial + ')' in member.name:
+            if '(S-N ' + line_array[1] + ')' in member.name:
                 return member
         return None
 
-    def _exists_in_tar(self, serial):
-        for member in self.tar.getmembers():
-            if '(S-N '+serial+')' in member.name:
-                return True
+    def isValid(self, line_array):
+        if line_array[7].isdigit() and line_array[8].isdigit():
+            return True
         return False
 
-    def _hdd_exists(self, line_array, model_text):
+    def _save_new_hdd(self, line_array, filename):
+        model = self._save_and_get_models(line_array[2])
+        size = self._save_and_get_size(line_array[3])
+        lock_state = self._save_and_get_lock_state(line_array[4])
+        speed = self._save_and_get_speed(line_array[5])
+        form_factor = self._save_and_get_form_factor(line_array[6])
         print(line_array[1])
-        print(model_text)
-        model = HddModels.objects.get_or_create(hdd_models_name=model_text)[0]
+        print(line_array[7].replace("%", ""))
+        print(line_array[8])
+        print(filename)
+        print(self.lot)
+        print(model)
+        print(size)
+        print(lock_state)
+        print(speed)
+        print(form_factor)
+        hdd = Hdds(
+            hdd_serial=line_array[1],
+            health=line_array[7].replace("%", ""),
+            days_on=line_array[8],
+            tar_member_name=filename,
+            f_lot=self.lot,
+            f_hdd_models=model,
+            f_hdd_sizes=size,
+            f_lock_state=lock_state,
+            f_speed=speed,
+            f_form_factor=form_factor
+        )
+        hdd.save()
+
+    def _hdd_exists(self, line_array):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
         hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
         return hdd.exists()
         # return Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists()
@@ -524,7 +565,7 @@ class TarProcessor:
             self.lot = Lots.objects.get(lot_name=self.lot_name)
         except Lots.DoesNotExist:
             self.lot = Lots(
-                lot_name=self.self.lot_name,
+                lot_name=self.lot_name,
                 date_of_lot=timezone.now().today().date()
             )
             self.lot.save()

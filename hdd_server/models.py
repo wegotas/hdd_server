@@ -41,6 +41,7 @@ class Hdds(models.Model):
     hdd_serial = models.CharField(max_length=45, blank=True, null=True)
     health = models.IntegerField(blank=True, null=True)
     days_on = models.IntegerField(blank=True, null=True)
+    tar_member_name = models.CharField(max_length=200, blank=True, null=True)
     f_lot = models.ForeignKey('Lots', models.DO_NOTHING, blank=True, null=True)
     f_hdd_models = models.ForeignKey(HddModels, models.DO_NOTHING, blank=True, null=True)
     f_hdd_sizes = models.ForeignKey(HddSizes, models.DO_NOTHING, blank=True, null=True)

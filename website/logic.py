@@ -9,6 +9,7 @@ import os
 from threading import Thread
 import tarfile
 import datetime
+from subprocess import call
 
 
 class HddWriter:
@@ -440,23 +441,36 @@ class TarProcessor:
         self._save_and_set_lots()
         for member in self.tar.getmembers():
             if '.txt' in member.name:
-                print(member.name)
+                print('textfile: ' + member.name)
                 file = self.tar.extractfile(member)
                 with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
                     textToWrite = '* ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
                     isMissing = False
                     new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
                     with tarfile.open(new_tarfile_loc, 'a') as new_tar:
+                        print('After opening new tar')
                         for bline in file.readlines():
                             line = bline.decode('utf-8')
+                            print(line)
                             line_array = line.split('@')
                             if self.isValid(line_array):
+                                print('Valid array')
                                 tarmember = self.get_tar_member_by_serial(line_array)
                                 if self._hdd_exists(line_array):
                                     # print('Record exists')
                                     if tarmember is not None:
                                         print('True', 'True')
                                         isMissing = True
+                                        tarmember_to_remove = self.get_tarmember_name(line_array)
+                                        # call_output = call(['tar', '-vf', new_tarfile_loc, '--delete', tarmember_to_remove])
+                                        print('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
+                                        os.system('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
+                                        # print(call_output)
+                                        filename = tarmember.name
+                                        file = self.tar.extractfile(tarmember)
+                                        print(type(file))
+                                        new_tar.addfile(tarmember, file)
+                                        print('After new tar added')
                                         textToWrite += 'SN: ' + line_array[1] + '| info updated. Old file association deleted\r\n'
                                     else:
                                         print('True', 'False')
@@ -475,10 +489,16 @@ class TarProcessor:
                                         isMissing = True
                                         textToWrite += 'SN: ' + line_array[1] + '| skipped. Not present in database. No file associated.\r\n'
                             else:
+                                print('Invalid array')
                                 textToWrite += 'SN: ' + line_array[1] + '| values which should be numbers, are not.\r\n'
                         textToWrite += '===============================================\r\n'
                         if isMissing:
                             logfile.write(textToWrite)
+
+    def get_tarmember_name(self, line_array):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
+        return hdd.tar_member_name
 
     def get_tar_member_by_serial(self, line_array):
         for member in self.tar.getmembers():
@@ -487,9 +507,29 @@ class TarProcessor:
         return None
 
     def isValid(self, line_array):
-        if line_array[7].isdigit() and line_array[8].isdigit():
+        # print('line_array[7]: ' + line_array[7].strip().replace("%", ""))
+        # print(line_array[7].replace("%", "").isdigit())
+        # print('line_array[8]: ' + line_array[8].strip())
+        # print(line_array[8].isdigit())
+        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
             return True
         return False
+
+    def _update_existing_hdd(self, line_array, filename):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
+        size = self._save_and_get_size(line_array[3])
+        lock_state = self._save_and_get_lock_state(line_array[4])
+        speed = self._save_and_get_speed(line_array[5])
+        form_factor = self._save_and_get_form_factor(line_array[6])
+        hdd.f_hdd_sizes = size
+        hdd.f_lock_state = lock_state
+        hdd.f_speed = speed
+        hdd.f_form_factor = form_factor
+        hdd.health = line_array[7].replace("%", "")
+        hdd.days_on = line_array[8]
+        hdd.tar_member_name = filename
+        hdd.save()
 
     def _save_new_hdd(self, line_array, filename):
         model = self._save_and_get_models(line_array[2])
@@ -497,16 +537,16 @@ class TarProcessor:
         lock_state = self._save_and_get_lock_state(line_array[4])
         speed = self._save_and_get_speed(line_array[5])
         form_factor = self._save_and_get_form_factor(line_array[6])
-        print(line_array[1])
-        print(line_array[7].replace("%", ""))
-        print(line_array[8])
-        print(filename)
-        print(self.lot)
-        print(model)
-        print(size)
-        print(lock_state)
-        print(speed)
-        print(form_factor)
+        # print(line_array[1])
+        # print(line_array[7].replace("%", ""))
+        # print(line_array[8])
+        # print(filename)
+        # print(self.lot)
+        # print(model)
+        # print(size)
+        # print(lock_state)
+        # print(speed)
+        # print(form_factor)
         hdd = Hdds(
             hdd_serial=line_array[1],
             health=line_array[7].replace("%", ""),

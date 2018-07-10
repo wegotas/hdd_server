@@ -104,7 +104,7 @@ class HddWriter:
         form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
         return form_factor_to_return
 
-
+'''
 class MyHandler(PatternMatchingEventHandler):
     patterns = ['*']
 
@@ -138,16 +138,14 @@ def start_observer():
         observer.stop()
         logging.debug('Observerer ended')
     observer.join()
-
+'''
 
 def on_start():
     print("on start")
-    """
     if os.environ['RUN_ON_START']:
         os.environ['RUN_ON_START'] = 'False'
         tid = Thread(target=start_observer)
         tid.start()
-    """
 
 
 class LotHolder:
@@ -193,7 +191,7 @@ class LotsHolder:
         return lots_to_return
 
     def filter(self, data_dict):
-        keys = ('nam-af', 'dat-af', 'cnt-af')
+        keys = ('nam-af', 'day-af', 'cnt-af')
         new_dict = {}
         if 'lots' in data_dict:
             data_dict.pop('lots')
@@ -205,7 +203,7 @@ class LotsHolder:
                 for lot in self.lots[:]:
                     if not lot.lot_name in new_dict[key]:
                         self.lots.remove(lot)
-            elif key == 'dat-af':
+            elif key == 'day-af':
                 for lot in self.lots[:]:
                     if not str(lot.date_of_lot) in new_dict[key]:
                         self.lots.remove(lot)
@@ -220,6 +218,7 @@ class HddHolder:
     def __init__(self):
         self.hdds = Hdds.objects.all()
         self.autoFilters = HddAutoFilterOptions(self.hdds)
+        self.changedKeys = []
 
     def filter(self, data_dict):
         keys = ('ser-af', 'mod-af', 'siz-af', 'loc-af', 'spe-af', 'for-af', 'hp-af', 'day-af')
@@ -231,6 +230,7 @@ class HddHolder:
                 new_dict[key] = data_dict.pop(key)
         for key, value in new_dict.items():
             if key in keys:
+                self.changedKeys.append(key)
                 if key == 'ser-af':
                     self.hdds = self.hdds.filter(hdd_serial__in=new_dict[key])
                 elif key == 'mod-af':
@@ -247,6 +247,7 @@ class HddHolder:
                     self.hdds = self.hdds.filter(health__in=new_dict[key])
                 elif key == 'day-af':
                     self.hdds = self.hdds.filter(days_on__in=new_dict[key])
+        self.autoFilters = HddAutoFilterOptions(self.hdds)
 
 
 class HddAutoFilterOptions:
@@ -348,6 +349,36 @@ class LotContentHolder:
         self.lot = Lots.objects.get(lot_id=index)
         self.hdds = Hdds.objects.filter(f_lot=self.lot)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
+        self.changedKeys = []
+
+    def filter(self, data_dict):
+        # print(data_dict)
+        keys = ('siz-af', 'loc-af', 'day-af', 'for-af', 'spe-af', 'mod-af', 'hp-af', 'ser-af')
+        new_dict = {}
+        for key in keys:
+            if key in data_dict:
+                new_dict[key] = data_dict.pop(key)
+        # print(new_dict)
+        for key, value in new_dict.items():
+            # print(key + ' ' + str(value))
+            self.changedKeys.append(key)
+            if key == 'siz-af':
+                self.hdds = self.hdds.filter(f_hdd_sizes__hdd_sizes_name__in=new_dict[key])
+            elif key == 'loc-af':
+                self.hdds = self.hdds.filter(f_lock_state__lock_state_name__in=new_dict[key])
+            elif key == 'day-af':
+                self.hdds = self.hdds.filter(days_on__in=new_dict[key])
+            elif key == 'for-af':
+                self.hdds = self.hdds.filter(f_form_factor__form_factor_name__in=new_dict[key])
+            elif key == 'spe-af':
+                self.hdds = self.hdds.filter(f_speed__speed_name__in=new_dict[key])
+            elif key == 'mod-af':
+                self.hdds = self.hdds.filter(f_hdd_models__hdd_models_name__in=new_dict[key])
+            elif key == 'hp-af':
+                self.hdds = self.hdds.filter(health__in=new_dict[key])
+            elif key == 'ser-af':
+                self.hdds = self.hdds.filter(hdd_serial__in=new_dict[key])
+            self.autoFilters = HddAutoFilterOptions(self.hdds)
 
 
 class HddToEdit:
@@ -376,7 +407,7 @@ class HddToEdit:
         self.form_factors.sort()
 
     def process_edit(self, index, data_dict):
-        print(index)
+        # print(index)
         model = self.get_or_save_model(data_dict.pop('model')[0])
         size = self.get_or_save_size(data_dict.pop('size')[0])
         state = self.get_or_save_state(data_dict.pop('state')[0])
@@ -413,87 +444,75 @@ class HddToEdit:
         form_factor = FormFactor.objects.get_or_create(form_factor_name=form_factor_text)[0]
         return form_factor
 
-'''
-class TarSerialProcessor:
-
-    def __init__(self, tar_processor, serial):
-        self.exists = False
-        for member in tar_processor.tar.getmembers():
-            if '(S-N '+serial+')' in member.name:
-                self.exists = True
-                file = tar_processor.tar.extractfile(member)
-                print(file)
-                new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), tar_processor.lot_name+'.tar')
-                print(new_tarfile_loc)
-                with tarfile.open(new_tarfile_loc, 'a') as new_tar:
-                    new_tar.addfile(member, file)
-                break
-        self.exists = False
-'''
 
 class TarProcessor:
 
-    def __init__(self, inMemoryFile):
-        self.lot_name = inMemoryFile._name.replace('.tar', '')
-        self.tar = tarfile.open(fileobj=inMemoryFile.file)
+    def __init__(self, inMemoryFile, filename=None):
+        if filename is None:
+            self.lot_name = inMemoryFile._name.replace('.tar', '')
+            self.tar = tarfile.open(fileobj=inMemoryFile.file)
+            self.fileLoc = ''
+        else:
+            self.lot_name = filename.replace('.tar', '')
+            self.tar = tarfile.open(inMemoryFile)
+            self.fileLoc = filename
 
     def process_data(self):
         self._save_and_set_lots()
+        # print(type(self.tar))
         for member in self.tar.getmembers():
             if '.txt' in member.name:
-                print('textfile: ' + member.name)
                 file = self.tar.extractfile(member)
                 with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
                     textToWrite = '* ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
                     isMissing = False
                     new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
                     with tarfile.open(new_tarfile_loc, 'a') as new_tar:
-                        print('After opening new tar')
                         for bline in file.readlines():
-                            line = bline.decode('utf-8')
-                            print(line)
-                            line_array = line.split('@')
-                            if self.isValid(line_array):
-                                print('Valid array')
-                                tarmember = self.get_tar_member_by_serial(line_array)
-                                if self._hdd_exists(line_array):
-                                    # print('Record exists')
-                                    if tarmember is not None:
-                                        print('True', 'True')
-                                        isMissing = True
-                                        tarmember_to_remove = self.get_tarmember_name(line_array)
-                                        # call_output = call(['tar', '-vf', new_tarfile_loc, '--delete', tarmember_to_remove])
-                                        print('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
-                                        os.system('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
-                                        # print(call_output)
-                                        filename = tarmember.name
-                                        file = self.tar.extractfile(tarmember)
-                                        print(type(file))
-                                        new_tar.addfile(tarmember, file)
-                                        print('After new tar added')
-                                        textToWrite += 'SN: ' + line_array[1] + '| info updated. Old file association deleted\r\n'
+                            try:
+                                line = bline.decode('utf-8')
+                                line_array = line.split('@')
+                                # print(line_array)
+                                if self.isValid(line_array):
+                                    tarmember = self.get_tar_member_by_serial(line_array)
+                                    if self._hdd_exists(line_array):
+                                        if tarmember is not None:
+                                            isMissing = True
+                                            tarmember_to_remove = self.get_tarmember_name(line_array)
+                                            os.system('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
+                                            filename = tarmember.name
+                                            file = self.tar.extractfile(tarmember)
+                                            new_tar.addfile(tarmember, file)
+                                            self._update_existing_hdd(line_array, filename)
+                                            textToWrite += 'SN: ' + line_array[1] + '| info updated. File updated.\r\n'
+                                        else:
+                                            self._update_existing_hdd_without_file(line_array)
+                                            isMissing = True
+                                            textToWrite += 'SN: ' + line_array[1] + '| Record info updated. File info not changed.\r\n'
                                     else:
-                                        print('True', 'False')
-                                        isMissing = True
-                                        textToWrite += 'SN: ' + line_array[1] + '| info updated. Old pdf deleted\r\n'
+                                        if tarmember is not None:
+                                            file = self.tar.extractfile(tarmember)
+                                            filename = tarmember.name
+                                            new_tar.addfile(tarmember, file)
+                                            self._save_new_hdd(line_array, filename)
+                                        else:
+                                            isMissing = True
+                                            textToWrite += 'SN: ' + line_array[1] + '| skipped. Not present in database. No file associated.\r\n'
                                 else:
-                                    # print('No such record')
-                                    if tarmember is not None:
-                                        print('False', 'True')
-                                        file = self.tar.extractfile(tarmember)
-                                        filename = tarmember.name
-                                        new_tar.addfile(tarmember, file)
-                                        self._save_new_hdd(line_array, filename)
-                                    else:
-                                        print('False', 'False')
-                                        isMissing = True
-                                        textToWrite += 'SN: ' + line_array[1] + '| skipped. Not present in database. No file associated.\r\n'
-                            else:
-                                print('Invalid array')
-                                textToWrite += 'SN: ' + line_array[1] + '| values which should be numbers, are not.\r\n'
+                                    # print('Invalid array')
+                                    # print(line_array)
+                                    textToWrite += 'SN: ' + line_array[1] + '| values which should be numbers, are not.\r\n'
+                            except Exception as e:
+                                isMissing = True
+                                textToWrite +='\r\n Error: ' + str(e)+' \r\n'
                         textToWrite += '===============================================\r\n'
                         if isMissing:
                             logfile.write(textToWrite)
+        try:
+            if self.fileLoc != '':
+                os.remove(self.fileLoc)
+        except:
+            pass
 
     def get_tarmember_name(self, line_array):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
@@ -514,6 +533,21 @@ class TarProcessor:
         if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
             return True
         return False
+
+    def _update_existing_hdd_without_file(self, line_array):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)[0]
+        size = self._save_and_get_size(line_array[3])
+        lock_state = self._save_and_get_lock_state(line_array[4])
+        speed = self._save_and_get_speed(line_array[5])
+        form_factor = self._save_and_get_form_factor(line_array[6])
+        hdd.f_hdd_sizes = size
+        hdd.f_lock_state = lock_state
+        hdd.f_speed = speed
+        hdd.f_form_factor = form_factor
+        hdd.health = line_array[7].replace("%", "")
+        hdd.days_on = line_array[8]
+        hdd.save()
 
     def _update_existing_hdd(self, line_array, filename):
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
@@ -565,7 +599,6 @@ class TarProcessor:
         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
         hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
         return hdd.exists()
-        # return Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists()
 
     def _save_hdd(self, line_array, model, size, lock_state, speed, form_factor):
         if Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model).exists():
@@ -629,3 +662,38 @@ class TarProcessor:
     def _save_and_get_form_factor(self, form_factor):
         form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
         return form_factor_to_return
+
+
+class TarAndLogHandler(PatternMatchingEventHandler):
+    patterns = ['*.tar']
+
+    def process(self, event):
+        logging.debug(event.src_path)
+        logging.debug(event.event_type)
+        index = 0
+        tp = TarProcessor(event.src_path, os.path.basename(event.src_path).replace('.tar', ''))
+        tp.process_data()
+        logging.debug(index)
+        logging.debug('_________________________________________')
+
+    def on_created(self, event):
+        if not event.is_directory:
+            self.process(event)
+
+
+def start_observer():
+    observer = Observer()
+    log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
+    logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
+    observer.schedule(TarAndLogHandler(), '/home/sopenaclient/Desktop/django_project/hdd_server/temp')
+    logging.debug("Start of observer")
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(10)
+    except KeyboardInterrupt:
+        logging.debug('Ending observer, due to keyboard interupt')
+        observer.stop()
+        logging.debug('Observerer ended')
+    observer.join()

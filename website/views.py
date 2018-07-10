@@ -16,7 +16,9 @@ def lot_content(request, int_index):
         print('POST method')
     if request.method == 'GET':
         print('GET method')
+        # print(request.GET)
         lch = LotContentHolder(int_index)
+        lch.filter(request.GET.copy())
         return render(request, 'lot_content.html', {'lch': lch})
 
 
@@ -99,12 +101,6 @@ def tar(request):
             print("Valid")
             tp = TarProcessor(request.FILES['document'])
             tp.process_data()
-            # form.save()
-            # file = request.FILES['file']
-            # fs = FileSystemStorage()
-            # filename = fs.save(file.name, file)
-            # uploaded_file_url = fs.url(filename)
-            # print("uploaded_file_url: " + uploaded_file_url)
             return render(request, 'success.html')
         else:
             print("Invalid")

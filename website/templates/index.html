@@ -12,8 +12,8 @@
     <form>
         <button name="lots" value="True">Lots table</button>
         <button name="hdds" value="True">Hdds table</button>
-        <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter out</button></div>
         {% if lh.lots is not None %}
+        <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
         <div><button type="button" onclick="importNewLot(1)">Import new lot</button></div>
         <table class="mainTable">
             <tr>
@@ -55,13 +55,13 @@
                     <div id="af-Date" class="autofilter">
                         <div class="af-top">
                             <div class="af-checkbkox">
-                                <input type="checkbox" onclick="afSelectAll(this, 'dat-af')">
+                                <input type="checkbox" onclick="afSelectAll(this, 'day-af')">
                             </div>
                             <div class="af-textinput">
-                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'dat-af')">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'day-af')">
                             </div>
                         </div>
-                        <div class="af-body" id="dat-af">
+                        <div class="af-body" id="day-af">
                             {% for afChoice in lh.autoFilters.dates_of_lots %}
                             <div class="af-selection">
                                 <div class="af-checkbkox">
@@ -117,10 +117,11 @@
         </table>
         {% endif %}
         {% if hh.hdds %}
+        <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
         <table border="1">
             <tr>
                 <th>
-                    <div class="tooltip">Serial:
+                    <div class="tooltip">Serial:{% if 'ser-af' in hh.changedKeys %}*{% endif %}
                         <span class="tooltiptext">Unique ID set up by manufacturer.</span>
                     </div>
                     <button type="button" onclick="autoFilterMenu('af-Serial')">
@@ -151,7 +152,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Model
+                <th>Model{% if 'mod-af' in hh.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Model')">
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -180,7 +181,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Size
+                <th>Size{% if 'siz-af' in hh.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Size')">
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -209,7 +210,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Lock state
+                <th>Lock state{% if 'loc-af' in hh.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Lock')">
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -238,7 +239,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Speed
+                <th>Speed{% if 'spe-af' in hh.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Speed')">
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -267,7 +268,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Form factor
+                <th>Form factor{% if 'for-af' in hh.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Form')">
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -296,7 +297,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Health
+                <th>Health{% if 'hp-af' in hh.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Health')">
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -325,7 +326,7 @@
                         </div>
                     </div>
                 </th>
-                <th>Days on
+                <th>Days on{% if 'day-af' in hh.changedKeys %}*{% endif %}
                     <button type="button" onclick="autoFilterMenu('af-Days')">
                         <img
                             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"

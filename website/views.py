@@ -54,6 +54,16 @@ def hdd_edit(request, int_index):
 
 
 @csrf_exempt
+def hdd_delete(request, int_index):
+    print('hdd_delete')
+    htd = HddToDelete(int_index)
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        return HttpResponse('<p>You should not be here.</p><p>What are you doing over here?</p>')
+
+@csrf_exempt
 def log(request):
     print("log upload")
     if request.method == 'POST':

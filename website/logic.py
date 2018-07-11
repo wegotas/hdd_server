@@ -140,6 +140,7 @@ def start_observer():
     observer.join()
 '''
 
+
 def on_start():
     print("on start")
     if os.environ['RUN_ON_START']:
@@ -444,6 +445,17 @@ class HddToEdit:
         form_factor = FormFactor.objects.get_or_create(form_factor_name=form_factor_text)[0]
         return form_factor
 
+class HddToDelete:
+
+    def __init__(self, pk=None, serial=None):
+        # print(int_index)
+        # hdd = Hdds.objects.filter()
+        if pk:
+            self.hdd = Hdds.objects.filter(hdd_id=pk)
+        if serial:
+            self.hdd = Hdds.objects.filter(hdd_serial=serial)
+        print(self.hdd)
+
 
 class TarProcessor:
 
@@ -526,10 +538,6 @@ class TarProcessor:
         return None
 
     def isValid(self, line_array):
-        # print('line_array[7]: ' + line_array[7].strip().replace("%", ""))
-        # print(line_array[7].replace("%", "").isdigit())
-        # print('line_array[8]: ' + line_array[8].strip())
-        # print(line_array[8].isdigit())
         if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
             return True
         return False
@@ -571,16 +579,6 @@ class TarProcessor:
         lock_state = self._save_and_get_lock_state(line_array[4])
         speed = self._save_and_get_speed(line_array[5])
         form_factor = self._save_and_get_form_factor(line_array[6])
-        # print(line_array[1])
-        # print(line_array[7].replace("%", ""))
-        # print(line_array[8])
-        # print(filename)
-        # print(self.lot)
-        # print(model)
-        # print(size)
-        # print(lock_state)
-        # print(speed)
-        # print(form_factor)
         hdd = Hdds(
             hdd_serial=line_array[1],
             health=line_array[7].replace("%", ""),
@@ -685,7 +683,8 @@ def start_observer():
     observer = Observer()
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
     logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
-    observer.schedule(TarAndLogHandler(), '/home/sopenaclient/Desktop/django_project/hdd_server/temp')
+    # observer.schedule(TarAndLogHandler(), '/home/sopenaclient/Desktop/django_project/hdd_server/temp')
+    observer.schedule(TarAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
     logging.debug("Start of observer")
     observer.start()
 

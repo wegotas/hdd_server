@@ -240,3 +240,11 @@ function isNumber(event) {
 	keycode = event.keyCode;
 	return (keycode=>48 && keycode<=57);
 }
+
+function deleteHddFromHddEdit(index) {
+	if (confirm('Do you really want to delete this hdd?')) {
+		URLtoWorkWith = location.href;
+		URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/hdd_delete/');
+		loadPage(URLtoWorkWith);
+	}
+}

@@ -8,7 +8,7 @@ from django.core.files.storage import FileSystemStorage
 import tarfile
 
 # Create your views here.
-
+# TEST
 
 @csrf_exempt
 def lot_content(request, int_index):

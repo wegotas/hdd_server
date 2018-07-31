@@ -369,7 +369,8 @@
                 <td>{{ hdd.days_on }} d.</td>
                 <td>
                     <button type="button" onclick="editHdd({{ hdd.hdd_id }}, 1)">Edit</button>
-                    <button type="button" onclick="deleteHddFromIndex({{ hdd.hdd_id }})">delete</button>
+                    <button type="button" onclick="deleteHddFromIndex({{ hdd.hdd_id }})">Delete</button>
+                    <button type="button" onclick="viewPDF({{ hdd.hdd_id }})">Pdf</button>
                 </td>
             </tr>
             {% endfor %}

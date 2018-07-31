@@ -460,9 +460,11 @@ class HddToDelete:
         try:
             self.hdd.delete()
             self.success = True
+            print('Succesful deletion')
         except Exception as e:
             self.success = False
             self.message = 'Failure to delete record\r\n'+str(e)
+            print('Failed deletion')
 
 
 class TarProcessor:
@@ -695,7 +697,6 @@ def start_observer():
     observer.schedule(TarAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
     logging.debug("Start of observer")
     observer.start()
-
     try:
         while True:
             time.sleep(10)
@@ -704,3 +705,14 @@ def start_observer():
         observer.stop()
         logging.debug('Observerer ended')
     observer.join()
+
+
+class PDFViewer:
+
+    def __init__(self, pk):
+        hdd = Hdds.objects.get(hdd_id=pk)
+        tf = tarfile.open(os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), hdd.f_lot.lot_name + '.tar'))
+        tarmember = tf.getmember(hdd.tar_member_name)
+        pdf = tf.extractfile(tarmember)
+        pdf_content = pdf.read()
+        self.pdf_content = pdf_content

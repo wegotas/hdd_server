@@ -126,3 +126,14 @@ def tar(request):
     else:
         form = DocumentForm()
         return render(request, 'uploader.html', {'form': form})
+
+
+def view_pdf(request, int_index):
+    print('Index is: ' + str(int_index))
+    print('view_pdf')
+    pv = PDFViewer(int_index)
+    if request.method == 'POST':
+        print('POST request')
+    elif request.method == 'GET':
+        print('GET request')
+        return HttpResponse(pv.pdf_content, content_type='application/pdf')

@@ -254,15 +254,6 @@ function deleteHddFromHddEdit(index) {
         if (xhr.status == 200) {
           console.log('Close down window');
           document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
-          /*
-          setTimeout(
-            function() {
-              window.close();
-            }, 5000
-          );
-          window.onload = closeWindow();
-          close();
-          */
         }
         if (xhr.status == 404) {
           console.log('Throw new pages content');
@@ -273,40 +264,38 @@ function deleteHddFromHddEdit(index) {
 	}
 }
 
+
 function deleteHddFromIndex(index) {
  if (confirm('Do you really want to delete this hdd?')) {
-    var xhr = new XMLHttpRequest();
     URLtoWorkWith = location.href;
     parts = URLtoWorkWith.split('/');
     parts.pop();
-    parts.pop();
     URLtoWorkWith = parts.join('/');
     console.log(URLtoWorkWith);
-    URLtoWorkWith = URLtoWorkWith + '/hdd_edit/' + index + '/';
+    URLtoWorkWith = URLtoWorkWith + '/hdd_delete/' + index + '/';
     console.log(URLtoWorkWith);
-    /*
-    URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/hdd_delete/');
-    xhr.open('POST', URLtoWorkWith, true);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', URLtoWorkWith);
+    xhr.setRequestHeader("Content-type", "application/json");
     xhr.send();
-    xhr.onreadystatechange = function(e) {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
-          console.log('Close down window');
-          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
-          setTimeout(
-            function() {
-              window.close();
-            }, 5000
-          );
-          window.onload = closeWindow();
-          close();
-        }
-        if (xhr.status == 404) {
-          console.log('Throw new pages content');
-          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
-        }
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState != 4) return;
+      if (xhr.status == 200) {
+        console.log(xhr.responseText);
+        var infoWindow = window.open('', "", "width=1100,height=650");
+        infoWindow.document.body.innerHTML = xhr.responseText;
       }
     }
-    */
   } 
+}
+
+function viewPDF(index) {
+  URLtoWorkWith = location.href;
+  parts = URLtoWorkWith.split('/');
+  parts.pop();
+  URLtoWorkWith = parts.join('/');
+  console.log(URLtoWorkWith);
+  URLtoWorkWith = URLtoWorkWith + '/view_pdf/' + index + '/';
+  console.log(URLtoWorkWith);
+  var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
 }

@@ -25,7 +25,7 @@ SECRET_KEY = 'jwix!7q)o2_0std$s3^!2!0e)ixpp$cqex)s!m4ejj11dpu+2_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.9']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.9', '89.116.155.153']
 
 
 # Application definition

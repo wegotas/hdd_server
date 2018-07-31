@@ -445,16 +445,24 @@ class HddToEdit:
         form_factor = FormFactor.objects.get_or_create(form_factor_name=form_factor_text)[0]
         return form_factor
 
+
 class HddToDelete:
 
     def __init__(self, pk=None, serial=None):
-        # print(int_index)
-        # hdd = Hdds.objects.filter()
         if pk:
             self.hdd = Hdds.objects.filter(hdd_id=pk)
         if serial:
             self.hdd = Hdds.objects.filter(hdd_serial=serial)
-        print(self.hdd)
+        self.success = False
+        self.message = ''
+
+    def delete(self):
+        try:
+            self.hdd.delete()
+            self.success = True
+        except Exception as e:
+            self.success = False
+            self.message = 'Failure to delete record\r\n'+str(e)
 
 
 class TarProcessor:

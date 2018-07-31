@@ -112,14 +112,14 @@ class AFManager {
 	    console.log(attributes);
 	    for (var i = attributes.length -1; i > -1; i--) {
 	    	console.log("Attribute: " + attributes[i]);
-	      	for (var j = 0; j < this.possible_fieldnames.length; j++) {
-	        	console.log("Fieldname: " + this.possible_fieldnames[j]);
-	        	if ( attributes[i].includes(this.possible_fieldnames[j])) {
-	          		console.log("Removing");
-	          		attributes.splice(i, 1)
-	          		break;
-	        	}
-	      	}
+	      for (var j = 0; j < this.possible_fieldnames.length; j++) {
+	      	console.log("Fieldname: " + this.possible_fieldnames[j]);
+	      	if ( attributes[i].includes(this.possible_fieldnames[j])) {
+	        		console.log("Removing");
+	        		attributes.splice(i, 1)
+	        		break;
+	       	}
+	      }
 	    }
 	    console.log(attributes);
 	    console.log(this.getAFURLaddon());
@@ -159,9 +159,6 @@ function collectSelectedAF() {
   afmanager.set_possible_fieldnames();
 }
 
-function lot_content(index) {
-	var contentWindow = window.open('content/'+index+'/', "", "width=400,height=650");
-}
 
 function autoFilterMenu(filterDivId){
     filterDiv = document.getElementById(filterDivId);
@@ -214,13 +211,17 @@ function applyAFs() {
   loadPage(newURL);
 }
 
+function lot_content(index) {
+  var contentWindow = window.open('content/'+index+'/', "", "width=1100,height=650");
+}
+
 function editHdd(index, URLremovalToken) {
 	URLtoWorkWith = location.href.slice(0, -1);
 	parts = URLtoWorkWith.split('/');
 	for (var i =0; i<URLremovalToken; i++) {
 		parts.pop();
 	}
-	var editHddWindow = window.open(parts.join('/') + '/hdd_edit/'+index+'/', "", "width=400,height=650");
+	var editHddWindow = window.open(parts.join('/') + '/hdd_edit/'+index+'/', "", "width=620,height=340");
 }
 
 function importNewLot(URLremovalToken) {
@@ -243,8 +244,69 @@ function isNumber(event) {
 
 function deleteHddFromHddEdit(index) {
 	if (confirm('Do you really want to delete this hdd?')) {
+		var xhr = new XMLHttpRequest();
 		URLtoWorkWith = location.href;
 		URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/hdd_delete/');
-		loadPage(URLtoWorkWith);
+		xhr.open('POST', URLtoWorkWith, true);
+		xhr.send();
+		xhr.onreadystatechange = function(e) {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          console.log('Close down window');
+          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
+          /*
+          setTimeout(
+            function() {
+              window.close();
+            }, 5000
+          );
+          window.onload = closeWindow();
+          close();
+          */
+        }
+        if (xhr.status == 404) {
+          console.log('Throw new pages content');
+          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
+        }
+      }
+		}
 	}
+}
+
+function deleteHddFromIndex(index) {
+ if (confirm('Do you really want to delete this hdd?')) {
+    var xhr = new XMLHttpRequest();
+    URLtoWorkWith = location.href;
+    parts = URLtoWorkWith.split('/');
+    parts.pop();
+    parts.pop();
+    URLtoWorkWith = parts.join('/');
+    console.log(URLtoWorkWith);
+    URLtoWorkWith = URLtoWorkWith + '/hdd_edit/' + index + '/';
+    console.log(URLtoWorkWith);
+    /*
+    URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/hdd_delete/');
+    xhr.open('POST', URLtoWorkWith, true);
+    xhr.send();
+    xhr.onreadystatechange = function(e) {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          console.log('Close down window');
+          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
+          setTimeout(
+            function() {
+              window.close();
+            }, 5000
+          );
+          window.onload = closeWindow();
+          close();
+        }
+        if (xhr.status == 404) {
+          console.log('Throw new pages content');
+          document.getElementsByTagName('body')[0].innerHTML = xhr.responseText;
+        }
+      }
+    }
+    */
+  } 
 }

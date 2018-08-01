@@ -450,14 +450,18 @@ class HddToDelete:
 
     def __init__(self, pk=None, serial=None):
         if pk:
-            self.hdd = Hdds.objects.filter(hdd_id=pk)
+            self.hdd = Hdds.objects.filter(hdd_id=pk)[0]
         if serial:
-            self.hdd = Hdds.objects.filter(hdd_serial=serial)
+            self.hdd = Hdds.objects.filter(hdd_serial=serial)[0]
         self.success = False
         self.message = ''
 
     def delete(self):
         try:
+            """
+            'QuerySet' object has no attribute 'f_lot'
+            """
+            os.system('tar -vf ' + os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.hdd.f_lot.lot_name + '.tar') + ' --delete "' + self.hdd.tar_member_name + '"')
             self.hdd.delete()
             self.success = True
             print('Succesful deletion')

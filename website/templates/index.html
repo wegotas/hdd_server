@@ -10,8 +10,9 @@
 </head>
 <body>
     <form>
+        <button name="hdds" value="True">All hdds table</button>
         <button name="lots" value="True">Lots table</button>
-        <button name="hdds" value="True">Hdds table</button>
+        <button name="orders" value="True">Orders table</button>
         {% if lh.lots is not None %}
         <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
         <div><button type="button" onclick="importNewLot(1)">Import new lot</button></div>
@@ -375,6 +376,12 @@
             </tr>
             {% endfor %}
         </table>
+        {% endif %}
+        {% if oh %}
+        <div><button type="button" onclick="importNewOrder(1)">Import new lot</button></div>
+        <p style="color:red;">This is supposed to be orders</p>
+        <p style="color:red;">WIP</p>
+        <p style="color:red;">HTML table should reside here to show which order is in system.</p>
         {% endif %}
     </form>
 </body>

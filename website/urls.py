@@ -12,5 +12,6 @@ urlpatterns = [
     path('log/', views.log, name='log'),
     path('pdf/', views.pdf, name='pdf'),
     path('tar/', views.tar, name='tar'),
+    path('new_order/', views.order, name='tar'),
     path('', views.index, name='index'),
 ]

@@ -31,10 +31,13 @@ def index(request):
             lh = LotsHolder()
             lh.filter(request.GET.copy())
             return render(request, 'index.html', {'lh': lh})
-        if 'hdds' in request.GET:
+        elif 'hdds' in request.GET:
             hh = HddHolder()
             hh.filter(request.GET.copy())
             return render(request, 'index.html', {'hh': hh})
+        elif 'orders' in request.GET:
+            oh = 'placeholder'
+            return render(request, 'index.html', {'oh': oh})
     if request.method == 'POST':
         print('POST method')
     return render(request, 'index.html')
@@ -65,6 +68,7 @@ def hdd_delete(request, int_index):
             return render(request, 'success.html')
         else:
             print('Failed deletion')
+            print(htd.message)
             return render(request, 'failure.html', {'message': htd.message}, status=404)
     if request.method == 'GET':
         print('GET method')
@@ -123,6 +127,26 @@ def tar(request):
         else:
             print("Invalid")
             return render(request, 'uploader.html', {'form': form})
+    else:
+        form = DocumentForm()
+        return render(request, 'uploader.html', {'form': form})
+
+
+@csrf_exempt
+def order(request):
+    print("tar upload")
+    if request.method == 'POST':
+        '''
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("Valid")
+            tp = TarProcessor(request.FILES['document'])
+            tp.process_data()
+            return render(request, 'success.html')
+        else:
+            print("Invalid")
+            return render(request, 'uploader.html', {'form': form})
+        '''
     else:
         form = DocumentForm()
         return render(request, 'uploader.html', {'form': form})

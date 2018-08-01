@@ -284,6 +284,7 @@ function deleteHddFromIndex(index) {
         console.log(xhr.responseText);
         var infoWindow = window.open('', "", "width=1100,height=650");
         infoWindow.document.body.innerHTML = xhr.responseText;
+        location.reload();
       }
     }
   } 
@@ -298,4 +299,13 @@ function viewPDF(index) {
   URLtoWorkWith = URLtoWorkWith + '/view_pdf/' + index + '/';
   console.log(URLtoWorkWith);
   var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
+}
+
+function importNewOrder(URLremovalToken) {
+  URLtoWorkWith = location.href;
+  parts = URLtoWorkWith.split('/');
+  for (var i =0; i<URLremovalToken; i++) {
+    parts.pop();
+  }
+  var importOrderWindow = window.open(parts.join('/') + '/new_order/', "", "width=360,height=100");
 }

@@ -25,6 +25,17 @@ class HddModels(models.Model):
     class Meta:
         managed = True
         db_table = 'Hdd_models'
+        
+        
+class HddOrder(models.Model):
+    order_id = models.AutoField(primary_key=True)
+    order_name = models.CharField(max_length=45)
+    date_of_order = models.DateField(blank=True, null=True)
+    is_sold = models.IntegerField()
+
+    class Meta:
+        managed = True
+        db_table = 'Hdd_order'
 
 
 class HddSizes(models.Model):

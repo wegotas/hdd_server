@@ -134,7 +134,7 @@ def tar(request):
 
 @csrf_exempt
 def order(request):
-    print("tar upload")
+    print("order upload")
     if request.method == 'POST':
         '''
         form = DocumentForm(request.POST, request.FILES)
@@ -147,6 +147,12 @@ def order(request):
             print("Invalid")
             return render(request, 'uploader.html', {'form': form})
         '''
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            print("Valid")
+        else:
+            print("Invalid")
+            return render(request, 'uploader.html', {'form': form})
     else:
         form = DocumentForm()
         return render(request, 'uploader.html', {'form': form})

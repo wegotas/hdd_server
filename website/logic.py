@@ -707,7 +707,7 @@ def start_observer():
     except KeyboardInterrupt:
         logging.debug('Ending observer, due to keyboard interupt')
         observer.stop()
-        logging.debug('Observerer ended')
+        logging.debug('Observer ended')
     observer.join()
 
 
@@ -720,3 +720,22 @@ class PDFViewer:
         pdf = tf.extractfile(tarmember)
         pdf_content = pdf.read()
         self.pdf_content = pdf_content
+
+class OrderProcessor:
+
+    def __init__(self, txtObject):
+        print(txtObject)
+        print(type(txtObject))
+        for line in txtObject.readlines():
+            print('_________________')
+            print(line)
+
+    def isValid(self, line_array):
+        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
+            return True
+        return False
+
+    def _hdd_exists(self, line_array):
+        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
+        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
+        return hdd.exists()

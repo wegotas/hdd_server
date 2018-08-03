@@ -59,6 +59,7 @@ class Hdds(models.Model):
     f_lock_state = models.ForeignKey('LockState', models.DO_NOTHING, blank=True, null=True)
     f_speed = models.ForeignKey('Speed', models.DO_NOTHING, blank=True, null=True)
     f_form_factor = models.ForeignKey(FormFactor, models.DO_NOTHING, blank=True, null=True)
+    f_order = models.ForeignKey(HddOrder, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -95,7 +96,7 @@ class Speed(models.Model):
 
 class Document(models.Model):
     document_id = models.AutoField(primary_key=True)
-    document = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['tar'])])
+    document = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['tar', 'txt'])])
     uploaded_at = models.DateField(auto_now_add=True)
 
     class Meta:

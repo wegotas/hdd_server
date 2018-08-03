@@ -150,6 +150,8 @@ def order(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             print("Valid")
+            op = OrderProcessor(request.FILES['document'])
+            return HttpResponse('This page supposed to be thrown out after successful operation')
         else:
             print("Invalid")
             return render(request, 'uploader.html', {'form': form})

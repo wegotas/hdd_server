@@ -36,7 +36,8 @@ def index(request):
             hh.filter(request.GET.copy())
             return render(request, 'index.html', {'hh': hh})
         elif 'orders' in request.GET:
-            oh = 'placeholder'
+            # oh = 'placeholder'
+            oh = OrdersHolder()
             return render(request, 'index.html', {'oh': oh})
     if request.method == 'POST':
         print('POST method')

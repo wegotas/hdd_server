@@ -104,42 +104,6 @@ class HddWriter:
         form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
         return form_factor_to_return
 
-'''
-class MyHandler(PatternMatchingEventHandler):
-    patterns = ['*']
-
-    def process(self, event):
-        logging.debug(event.src_path)
-        logging.debug(event.event_type)
-        index = 0
-        with open(event.src_path) as file:
-            hw = HddWriter(file, 'test')
-            hw.save()
-        logging.debug(index)
-        logging.debug('_________________________________________')
-
-    def on_created(self, event):
-        if not event.is_directory:
-            self.process(event)
-
-
-def start_observer():
-    observer = Observer()
-    logging.basicConfig(filename='observer.log', level=logging.DEBUG, format="%(threadName)s:%(message)s")
-    observer.schedule(MyHandler(), '/home/sopenaclient/Desktop/django_project/hdd_server/media')
-    logging.debug("Start of observer")
-    observer.start()
-
-    try:
-        while True:
-            time.sleep(10)
-    except KeyboardInterrupt:
-        logging.debug('Ending observer, due to keyboard interupt')
-        observer.stop()
-        logging.debug('Observerer ended')
-    observer.join()
-'''
-
 
 def on_start():
     print("on start")
@@ -490,7 +454,7 @@ class TarProcessor:
             if '.txt' in member.name:
                 file = self.tar.extractfile(member)
                 with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
-                    textToWrite = '* ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
+                    textToWrite = '* importing lot ' + self.lot_name + ' || ' + str(datetime.date.today()) + ' *\r\n'
                     isMissing = False
                     new_tarfile_loc = os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), self.lot_name + '.tar')
                     with tarfile.open(new_tarfile_loc, 'a') as new_tar:
@@ -726,16 +690,92 @@ class OrderProcessor:
     def __init__(self, txtObject):
         print(txtObject)
         print(type(txtObject))
-        for line in txtObject.readlines():
-            print('_________________')
-            print(line)
+        print(txtObject._name)
+        print(txtObject.__dict__)
+        '''
+        hddOrder = HddOrder(
+            order_name=txtObject._name.replace('.txt', ''),
+            date_of_order=timezone.now().today().date(),
+            is_sold=0
+        )
+        hddOrder.save()
+        '''
+        hddOrder = self.get_hdd_order(txtObject._name)
+        with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
+            isMissing = False
+            textToWrite = '* importing order ' + txtObject._name.replace('.txt', '')+ ' || ' + str(datetime.date.today()) + ' *\r\n'
+            for line in txtObject.readlines():
+                line_array = line.split(b'@')
+                if self.isValid(line_array):
+                    model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
+                    hdds = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
+                    if hdds.exists():
+                        if hdds[0].f_order is not None:
+                            textToWrite += 'SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name
+                            print('SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name)
+                        hdds.update(f_order=hddOrder)
+                    else:
+                        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
+                        size = HddSizes.objects.get_or_create(hdd_sizes_name=line_array[3])[0]
+                        lock_state = LockState.objects.get_or_create(lock_state_name=line_array[4])[0]
+                        speed = Speed.objects.get_or_create(speed_name=line_array[5])[0]
+                        form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[6])[0]
+                        hdd = Hdds(
+                            hdd_serial=line_array[1],
+                            health=line_array[7].replace(b"%", b""),
+                            days_on=line_array[8],
+                            f_hdd_models=model,
+                            f_hdd_sizes=size,
+                            f_lock_state=lock_state,
+                            f_speed=speed,
+                            f_form_factor=form_factor,
+                            f_order=hddOrder
+                        )
+                        hdd.save()
+
 
     def isValid(self, line_array):
-        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
+        if line_array[7].replace(b"%", b"").strip().isdigit() and line_array[8].strip().isdigit():
             return True
         return False
 
-    def _hdd_exists(self, line_array):
-        model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
-        hdd = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
-        return hdd.exists()
+    def get_hdd_order(self, txtFileName):
+        hddOrders = HddOrder.objects.filter(order_name=txtFileName.replace('.txt', ''))
+        if hddOrders.exists():
+            hdds = Hdds.objects.filter(f_order=hddOrders[0].order_id)
+            hdds.update(f_order=None)
+            hddOrders[0].delete()
+        hddOrder = HddOrder(
+            order_name=txtFileName.replace('.txt', ''),
+            date_of_order=timezone.now().today().date(),
+            is_sold=0
+        )
+        hddOrder.save()
+        return hddOrder
+
+class OrderHolder:
+
+    def __int__(self, order_id, order_name, date_of_order, is_sold, count):
+        self.order_id = order_id
+        self.order_name = order_name
+        self.date_of_order = date_of_order
+        self.is_sold = is_sold
+        self.count = count
+
+
+class OrdersHolder:
+
+    def __init__(self):
+        self.set_orders()
+        print(self.orders)
+
+    def set_orders(self):
+        orders = HddOrder.objects.all()
+        self.orders = []
+        for order in orders:
+            count = Hdds.objects.filter(f_order=order).count()
+            print(type(order.order_id))
+            print(order.order_id)
+            # KAZKO NEPRALEIDZIA ZEMIAU ESANCIOS EILUTES
+            # oh = OrderHolder(order.order_id, order.order_name, order.date_of_order, order.is_sold, count)
+            # self.orders.append(oh)

@@ -18,6 +18,7 @@
         <div><button type="button" onclick="importNewLot(1)">Import new lot</button></div>
         <table class="mainTable">
             <tr>
+                <th>Nr.</th>
                 <th>Lot Name:
                     <button type="button" onclick="autoFilterMenu('af-Name')">
                         <img
@@ -109,6 +110,8 @@
             </tr>
             {% for lot in lh.lots %}
             <tr>
+                {{ lh.increment }}
+                <td>{{ lh.count }}</td>
                 <td>{{ lot.lot_name }}</td>
                 <td>{{ lot.date_of_lot|date:"c" }}</td>
                 <td>{{ lot.count }}</td>
@@ -121,6 +124,7 @@
         <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
         <table border="1">
             <tr>
+                <th>Nr.</th>
                 <th>
                     <div class="tooltip">Serial:{% if 'ser-af' in hh.changedKeys %}*{% endif %}
                         <span class="tooltiptext">Unique ID set up by manufacturer.</span>
@@ -360,6 +364,8 @@
             </tr>
             {% for hdd in hh.hdds %}
             <tr>
+                {{ hh.increment }}
+                <td>{{ hh.count }}</td>
                 <td>{{ hdd.hdd_serial }}</td>
                 <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
                 <td>{{ hdd.f_hdd_sizes.hdd_sizes_name }}</td>
@@ -379,9 +385,114 @@
         {% endif %}
         {% if oh %}
         <div><button type="button" onclick="importNewOrder(1)">Import new order</button></div>
-        <p style="color:red;">This is supposed to be orders</p>
-        <p style="color:red;">WIP</p>
-        <p style="color:red;">HTML table should reside here to show which order is in system.</p>
+        <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
+        <table border="1">
+            <tr>
+                <th>Nr.</th>
+                <th>Order name
+                    <button type="button" onclick="autoFilterMenu('af-hon')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                    <div id="af-hon" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'hon-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'hon-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="hon-af">
+                            {% for afChoice in oh.autoFilters.orders_names %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Date
+                    <button type="button" onclick="autoFilterMenu('af-dat')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                    <div id="af-dat" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'dat-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'dat-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="dat-af">
+                            {% for afChoice in oh.autoFilters.dates_of_orders %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice|date:"c" }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Sold status</th>
+                <th>Count
+                    <button type="button" onclick="autoFilterMenu('af-cnt')">
+                        <img
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
+                        >
+                    </button>
+                    <div id="af-cnt" class="autofilter">
+                        <div class="af-top">
+                            <div class="af-checkbkox">
+                                <input type="checkbox" onclick="afSelectAll(this, 'cnt-af')">
+                            </div>
+                            <div class="af-textinput">
+                                <input class="textinput" type="text" placeholder="keyword" oninput="filterKeywordChange(this, 'cnt-af')">
+                            </div>
+                        </div>
+                        <div class="af-body" id="cnt-af">
+                            {% for afChoice in oh.autoFilters.counts %}
+                            <div class="af-selection">
+                                <div class="af-checkbkox">
+                                    <input type="checkbox" onclick="afSelect(this)">
+                                </div>
+                                <div class="af-chkbxtitle">
+                                    {{ afChoice }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </th>
+                <th>Actions</th>
+            </tr>
+            {% for order in oh.orders %}
+            <tr>
+                {{ oh.increment }}
+                <td>{{ oh.count }}</td>
+                <td>{{ order.order_name }}</td>
+                <td>{{ order.date_of_order|date:"c" }}</td>
+                <td>{{ order.is_sold }}</td>
+                <td>{{ order.count }}</td>
+                <td>
+                    <button type="button" onclick="alert('Order id is: {{ order.order_id }}')">Button placeholder</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
         {% endif %}
     </form>
 </body>

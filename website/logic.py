@@ -143,8 +143,13 @@ class LotsHolderAutoFilter:
 class LotsHolder:
 
     def __init__(self):
+        self.count = 0
         self.lots = self._get_lots()
         self.autoFilters = LotsHolderAutoFilter(self.lots)
+
+    def increment(self):
+        self.count += 1
+        return ''
 
     def _get_lots(self):
         lots = Lots.objects.all()
@@ -181,9 +186,14 @@ class LotsHolder:
 class HddHolder:
 
     def __init__(self):
+        self.count = 0
         self.hdds = Hdds.objects.all()
         self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
+
+    def increment(self):
+        self.count += 1
+        return ''
 
     def filter(self, data_dict):
         keys = ('ser-af', 'mod-af', 'siz-af', 'loc-af', 'spe-af', 'for-af', 'hp-af', 'day-af')
@@ -462,7 +472,6 @@ class TarProcessor:
                             try:
                                 line = bline.decode('utf-8')
                                 line_array = line.split('@')
-                                # print(line_array)
                                 if self.isValid(line_array):
                                     tarmember = self.get_tar_member_by_serial(line_array)
                                     if self._hdd_exists(line_array):
@@ -489,8 +498,6 @@ class TarProcessor:
                                             isMissing = True
                                             textToWrite += 'SN: ' + line_array[1] + '| skipped. Not present in database. No file associated.\r\n'
                                 else:
-                                    # print('Invalid array')
-                                    # print(line_array)
                                     textToWrite += 'SN: ' + line_array[1] + '| values which should be numbers, are not.\r\n'
                             except Exception as e:
                                 isMissing = True
@@ -685,34 +692,24 @@ class PDFViewer:
         pdf_content = pdf.read()
         self.pdf_content = pdf_content
 
-class OrderProcessor:
+class HddOrderProcessor:
 
     def __init__(self, txtObject):
-        print(txtObject)
-        print(type(txtObject))
-        print(txtObject._name)
-        print(txtObject.__dict__)
-        '''
-        hddOrder = HddOrder(
-            order_name=txtObject._name.replace('.txt', ''),
-            date_of_order=timezone.now().today().date(),
-            is_sold=0
-        )
-        hddOrder.save()
-        '''
+        self.message = ''
         hddOrder = self.get_hdd_order(txtObject._name)
         with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
             isMissing = False
             textToWrite = '* importing order ' + txtObject._name.replace('.txt', '')+ ' || ' + str(datetime.date.today()) + ' *\r\n'
             for line in txtObject.readlines():
-                line_array = line.split(b'@')
+                line_array = line.decode('utf-8').split('@')
                 if self.isValid(line_array):
                     model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
                     hdds = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
                     if hdds.exists():
                         if hdds[0].f_order is not None:
+                            isMissing = True
                             textToWrite += 'SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name
-                            print('SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name)
+                            # print('SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name)
                         hdds.update(f_order=hddOrder)
                     else:
                         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
@@ -722,7 +719,7 @@ class OrderProcessor:
                         form_factor = FormFactor.objects.get_or_create(form_factor_name=line_array[6])[0]
                         hdd = Hdds(
                             hdd_serial=line_array[1],
-                            health=line_array[7].replace(b"%", b""),
+                            health=line_array[7].replace("%", ""),
                             days_on=line_array[8],
                             f_hdd_models=model,
                             f_hdd_sizes=size,
@@ -732,10 +729,13 @@ class OrderProcessor:
                             f_order=hddOrder
                         )
                         hdd.save()
-
+            textToWrite += '===============================================\r\n'
+            if isMissing:
+                logfile.write(textToWrite)
+                self.message = textToWrite
 
     def isValid(self, line_array):
-        if line_array[7].replace(b"%", b"").strip().isdigit() and line_array[8].strip().isdigit():
+        if line_array[7].replace("%", "").strip().isdigit() and line_array[8].strip().isdigit():
             return True
         return False
 
@@ -753,9 +753,10 @@ class OrderProcessor:
         hddOrder.save()
         return hddOrder
 
-class OrderHolder:
 
-    def __int__(self, order_id, order_name, date_of_order, is_sold, count):
+class HddOrderHolder:
+
+    def __init__(self, order_id, order_name, date_of_order, is_sold, count):
         self.order_id = order_id
         self.order_name = order_name
         self.date_of_order = date_of_order
@@ -763,19 +764,69 @@ class OrderHolder:
         self.count = count
 
 
-class OrdersHolder:
+class HddOrdersHolderAutoFilter:
+
+    def __init__(self, orders):
+        self.orders_names = []
+        self.dates_of_orders = []
+        self.are_sold = []
+        self.counts = []
+        for order in orders:
+            self.orders_names.append(order.order_name)
+            self.dates_of_orders.append(order.date_of_order)
+            self.are_sold.append(order.is_sold)
+            self.counts.append(order.count)
+        self.orders_names = list(set(self.orders_names))
+        self.orders_names.sort()
+        self.dates_of_orders = list(set(self.dates_of_orders))
+        self.dates_of_orders.sort()
+        self.are_sold = list(set(self.are_sold))
+        self.are_sold.sort()
+        self.counts = list(set(self.counts))
+        self.counts.sort()
+
+
+class HddOrdersHolder:
 
     def __init__(self):
+        self.count = 0
         self.set_orders()
-        print(self.orders)
+        self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
+
+    def increment(self):
+        self.count += 1
+        return ''
+
+    def filter(self, data_dict):
+        # print(data_dict)
+        keys = ('hon-af', 'dat-af', 'cnt-af')
+        new_dict = {}
+        for key in keys:
+            if key in data_dict:
+                new_dict[key] = data_dict.pop(key)
+        print(new_dict)
+        for key, value in new_dict.items():
+            if key == 'hon-af':
+                print('It is hon-af')
+                for order in self.orders[:]:
+                    print(order.order_name)
+                    if not order.order_name in new_dict[key]:
+                        self.orders.remove(order)
+            elif key == 'dat-af':
+                print('It is dat-af')
+                for order in self.orders[:]:
+                    if not str(order.date_of_order) in new_dict[key]:
+                        self.orders.remove(order)
+            elif key == 'cnt-af':
+                print('It is cnt-af')
+                for order in self.orders[:]:
+                    if not str(order.count) in new_dict[key]:
+                        self.orders.remove(order)
 
     def set_orders(self):
         orders = HddOrder.objects.all()
         self.orders = []
         for order in orders:
             count = Hdds.objects.filter(f_order=order).count()
-            print(type(order.order_id))
-            print(order.order_id)
-            # KAZKO NEPRALEIDZIA ZEMIAU ESANCIOS EILUTES
-            # oh = OrderHolder(order.order_id, order.order_name, order.date_of_order, order.is_sold, count)
-            # self.orders.append(oh)
+            oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.is_sold, count)
+            self.orders.append(oh)

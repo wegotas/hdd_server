@@ -37,7 +37,8 @@ def index(request):
             return render(request, 'index.html', {'hh': hh})
         elif 'orders' in request.GET:
             # oh = 'placeholder'
-            oh = OrdersHolder()
+            oh = HddOrdersHolder()
+            oh.filter(request.GET.copy())
             return render(request, 'index.html', {'oh': oh})
     if request.method == 'POST':
         print('POST method')
@@ -126,7 +127,6 @@ def tar(request):
             tp.process_data()
             return render(request, 'success.html')
         else:
-            print("Invalid")
             return render(request, 'uploader.html', {'form': form})
     else:
         form = DocumentForm()
@@ -134,25 +134,17 @@ def tar(request):
 
 
 @csrf_exempt
-def order(request):
+def hdd_order(request):
     print("order upload")
     if request.method == 'POST':
-        '''
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             print("Valid")
-            tp = TarProcessor(request.FILES['document'])
-            tp.process_data()
-            return render(request, 'success.html')
-        else:
-            print("Invalid")
-            return render(request, 'uploader.html', {'form': form})
-        '''
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            print("Valid")
-            op = OrderProcessor(request.FILES['document'])
-            return HttpResponse('This page supposed to be thrown out after successful operation')
+            hop = HddOrderProcessor(request.FILES['document'])
+            if hop.message != '':
+                return render(request, 'failure.html', {'message': op.message})
+            else:
+                return render(request, 'success.html')
         else:
             print("Invalid")
             return render(request, 'uploader.html', {'form': form})

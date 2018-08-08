@@ -360,6 +360,8 @@
                         </div>
                     </div>
                 </th>
+                <th>Lot</th>
+                <th>Order</th>
                 <th>Actions:</th>
             </tr>
             {% for hdd in hh.hdds %}
@@ -374,17 +376,19 @@
                 <td>{{ hdd.f_form_factor.form_factor_name }}</td>
                 <td>{{ hdd.health }}%</td>
                 <td>{{ hdd.days_on }} d.</td>
+                <td>{{ hdd.f_lot.lot_name }}</td>
+                <td>{{ hdd.f_order.order_name }}</td>
                 <td>
                     <button type="button" onclick="editHdd({{ hdd.hdd_id }}, 1)">Edit</button>
                     <button type="button" onclick="deleteHddFromIndex({{ hdd.hdd_id }})">Delete</button>
-                    <button type="button" onclick="viewPDF({{ hdd.hdd_id }})">Pdf</button>
+                    <button type="button" onclick="viewPDFfromIndex({{ hdd.hdd_id }})"{% if hdd.tar_member_name is None %} disabled{% endif %}>Pdf</button>
                 </td>
             </tr>
             {% endfor %}
         </table>
         {% endif %}
         {% if oh %}
-        <div><button type="button" onclick="importNewOrder(1)">Import new order</button></div>
+        <div><button type="button" onclick="importNewHddOrder(1)">Import new order</button></div>
         <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
         <table border="1">
             <tr>
@@ -488,7 +492,7 @@
                 <td>{{ order.is_sold }}</td>
                 <td>{{ order.count }}</td>
                 <td>
-                    <button type="button" onclick="alert('Order id is: {{ order.order_id }}')">Button placeholder</button>
+                    <button type="button" onclick="hdd_order_content({{ order.order_id }})">Content</button>
                 </td>
             </tr>
             {% endfor %}

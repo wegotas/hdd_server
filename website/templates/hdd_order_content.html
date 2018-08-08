@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lot content</title>
+    <title>Hdd order content</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}">
     <script type="text/javascript" src="{% static 'index.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
@@ -11,15 +11,15 @@
 <body>
     <form>
         <div class="header">
-            <div class="textdiv">Lot id: {{ lch.lot.lot_id }}</div>
-            <div class="textdiv">Lot name: {{ lch.lot.lot_name }}</div>
-            <div class="textdiv">Date {{ lch.lot.date_of_lot|date:"c" }}</div>
+            <div class="textdiv">Hdd order id: {{ hoch.hdd_order.order_id }}</div>
+            <div class="textdiv">Hdd order name: {{ hoch.hdd_order.order_name }}</div>
+            <div class="textdiv">Date {{ hoch.hdd_order.date_of_order|date:"c" }}</div>
         </div>
         <div class="tableDiv">
             <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
             <table class="mainTable">
                 <tr>
-                    <th>Serial{% if 'ser-af' in lch.changedKeys %}*{% endif %}
+                    <th>Serial{% if 'ser-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Serial')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -35,7 +35,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="ser-af">
-                                {% for afChoice in lch.autoFilters.serials %}
+                                {% for afChoice in hoch.autoFilters.serials %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -48,7 +48,7 @@
                             </div>
                         </div>
                     </th>
-                    <th>Model{% if 'mod-af' in lch.changedKeys %}*{% endif %}
+                    <th>Model{% if 'mod-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Model')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="mod-af">
-                                {% for afChoice in lch.autoFilters.models %}
+                                {% for afChoice in hoch.autoFilters.models %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -77,7 +77,7 @@
                             </div>
                         </div>
                     </th>
-                    <th>Size{% if 'siz-af' in lch.changedKeys %}*{% endif %}
+                    <th>Size{% if 'siz-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Size')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="siz-af">
-                                {% for afChoice in lch.autoFilters.sizes %}
+                                {% for afChoice in hoch.autoFilters.sizes %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -106,7 +106,7 @@
                             </div>
                         </div>
                     </th>
-                    <th>Lock state{% if 'loc-af' in lch.changedKeys %}*{% endif %}
+                    <th>Lock state{% if 'loc-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Lock')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -122,7 +122,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="loc-af">
-                                {% for afChoice in lch.autoFilters.locks %}
+                                {% for afChoice in hoch.autoFilters.locks %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -135,7 +135,7 @@
                             </div>
                         </div>
                     </th>
-                    <th>Speed{% if 'spe-af' in lch.changedKeys %}*{% endif %}
+                    <th>Speed{% if 'spe-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Speed')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -151,7 +151,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="spe-af">
-                                {% for afChoice in lch.autoFilters.speeds %}
+                                {% for afChoice in hoch.autoFilters.speeds %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -164,7 +164,7 @@
                             </div>
                         </div>
                     </th>
-                    <th>Form factor{% if 'for-af' in lch.changedKeys %}*{% endif %}
+                    <th>Form factor{% if 'for-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Form')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -180,7 +180,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="for-af">
-                                {% for afChoice in lch.autoFilters.forms %}
+                                {% for afChoice in hoch.autoFilters.forms %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -193,7 +193,7 @@
                             </div>
                         </div>
                     </th>
-                    <th>Health{% if 'hp-af' in lch.changedKeys %}*{% endif %}
+                    <th>Health{% if 'hp-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Health')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -209,7 +209,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="hp-af">
-                                {% for afChoice in lch.autoFilters.healths %}
+                                {% for afChoice in hoch.autoFilters.healths %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -222,7 +222,7 @@
                             </div>
                         </div>
                     </th>
-                    <th>Days on{% if 'day-af' in lch.changedKeys %}*{% endif %}
+                    <th>Days on{% if 'day-af' in hoch.changedKeys %}*{% endif %}
                         <button type="button" onclick="autoFilterMenu('af-Date')">
                             <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB3UlEQVR4Xp2RMYsaURDH39vd7HqkSZNCFDvBQoQUfgILG7tIrCRBJZg04hamsEhIKwS2sVgIFxFOCFaS5gx2CoqHEhUiClZG2ItE18fqSrxn5oVskWOv8H7wH/bNm5k3M4uPxyNihEKhx8Abp9Ppwhg/oJTyoKNpmvpms7nWdX0FYt/E5XJdAj8RIDADCWIqlfoSi8WecBy3BtcP0MJOy+VSy+fzzyFHgcd/IzB/lU6nL6rVqqkoip7JZLR4PL70+XzE4/Gsg8Hgt3A4XAGfnEwmn7rd7mdWHof+MRwOPxBCrv1+P5VlGReLRb7X6x263e6kUCic53K5ajQa7U4mEzKfz6+sPKsAajabV7VarWAYBtY0zRBF0SEIgihJ0kN4CbPYdrvtHI1GN3CeIQs4/CdoU63X61PY1y+2wNVqNWo0GnKpVHrp9Xpf3I4X0C3K5fIrnufPYc4g6NF+vzdAkqqqdDqdfkQWdh1YAqRsNnuxWCy+z2azOsz+FnxndrGYGTsikcjrSqXyfjAYfIWlXnY6nU/IBg7dDQdgh8OBMICAkwpAZ1Z3/AkFbO/wfTvgrP/P8k8uQClld/cfgRBy2O12eDwen223W3pygVarpQQCgVgikXjX7/c/ozv4A8n3K2osMTDJAAAAAElFTkSuQmCC"
@@ -238,7 +238,7 @@
                                 </div>
                             </div>
                             <div class="af-body" id="day-af">
-                                {% for afChoice in lch.autoFilters.days %}
+                                {% for afChoice in hoch.autoFilters.days %}
                                 <div class="af-selection">
                                     <div class="af-checkbkox">
                                         <input type="checkbox" onclick="afSelect(this)">
@@ -251,10 +251,10 @@
                             </div>
                         </div>
                     </th>
-                    <th>Order</th>
+                    <th>Lot</th>
                     <th>Actions:</th>
                 </tr>
-                {% for hdd in lch.hdds %}
+                {% for hdd in hoch.hdds %}
                 <tr>
                     <td>{{ hdd.hdd_serial }}</td>
                     <td>{{ hdd.f_hdd_models.hdd_models_name }}</td>
@@ -264,7 +264,7 @@
                     <td>{{ hdd.f_form_factor.form_factor_name }}</td>
                     <td>{{ hdd.health }}%</td>
                     <td>{{ hdd.days_on }} d.</td>
-                    <td>{{ hdd.f_order.order_name }}</td>
+                    <td>{{ hdd.f_lot.lot_name }}</td>
                     <td>
                         <button type="button" onclick="editHdd({{ hdd.hdd_id }}, 2)">Edit</button>
                     </td>

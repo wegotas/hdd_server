@@ -12,6 +12,82 @@ import datetime
 from subprocess import call
 
 
+
+def on_start():
+    print("on start")
+    if os.environ['RUN_ON_START']:
+        os.environ['RUN_ON_START'] = 'False'
+        tid = Thread(target=start_tar_observer)
+        tid.start()
+
+
+def start_tar_observer():
+    observer = Observer()
+    log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
+    logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
+    observer.schedule(TarAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
+    logging.debug("Start of observer")
+    observer.start()
+    try:
+        while True:
+            time.sleep(10)
+    except KeyboardInterrupt:
+        logging.debug('Ending observer, due to keyboard interupt')
+        observer.stop()
+        logging.debug('Observer ended')
+    observer.join()
+
+
+class TarAndLogHandler(PatternMatchingEventHandler):
+    patterns = ['*.tar']
+
+    def process(self, event):
+        logging.debug(event.src_path)
+        logging.debug(event.event_type)
+        index = 0
+        tp = TarProcessor(event.src_path, os.path.basename(event.src_path).replace('.tar', ''))
+        tp.process_data()
+        logging.debug(index)
+        logging.debug('_________________________________________')
+
+    def on_created(self, event):
+        if not event.is_directory:
+            self.process(event)
+
+
+def start_txt_observer():
+    observer = Observer()
+    log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
+    logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
+    observer.schedule(TxtAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
+    logging.debug("Start of observer")
+    observer.start()
+    try:
+        while True:
+            time.sleep(10)
+    except KeyboardInterrupt:
+        logging.debug('Ending observer, due to keyboard interupt')
+        observer.stop()
+        logging.debug('Observer ended')
+    observer.join()
+
+
+class TxtAndLogHandler(PatternMatchingEventHandler):
+    patterns = ['*.txt']
+
+    def process(self, event):
+        logging.debug(event.src_path)
+        logging.debug(event.event_type)
+        index = 0
+        # WIP, NEED FINISHING
+        logging.debug(index)
+        logging.debug('_________________________________________')
+
+    def on_created(self, event):
+        if not event.is_directory:
+            self.process(event)
+
+
 class HddWriter:
 
     def __init__(self, file, filename):
@@ -103,14 +179,6 @@ class HddWriter:
     def _save_and_get_form_factor(self, form_factor):
         form_factor_to_return = FormFactor.objects.get_or_create(form_factor_name=form_factor)[0]
         return form_factor_to_return
-
-
-def on_start():
-    print("on start")
-    if os.environ['RUN_ON_START']:
-        os.environ['RUN_ON_START'] = 'False'
-        tid = Thread(target=start_observer)
-        tid.start()
 
 
 class LotHolder:
@@ -323,6 +391,44 @@ class LotContentHolder:
     def __init__(self, index):
         self.lot = Lots.objects.get(lot_id=index)
         self.hdds = Hdds.objects.filter(f_lot=self.lot)
+        self.autoFilters = HddAutoFilterOptions(self.hdds)
+        self.changedKeys = []
+
+    def filter(self, data_dict):
+        # print(data_dict)
+        keys = ('siz-af', 'loc-af', 'day-af', 'for-af', 'spe-af', 'mod-af', 'hp-af', 'ser-af')
+        new_dict = {}
+        for key in keys:
+            if key in data_dict:
+                new_dict[key] = data_dict.pop(key)
+        # print(new_dict)
+        for key, value in new_dict.items():
+            # print(key + ' ' + str(value))
+            self.changedKeys.append(key)
+            if key == 'siz-af':
+                self.hdds = self.hdds.filter(f_hdd_sizes__hdd_sizes_name__in=new_dict[key])
+            elif key == 'loc-af':
+                self.hdds = self.hdds.filter(f_lock_state__lock_state_name__in=new_dict[key])
+            elif key == 'day-af':
+                self.hdds = self.hdds.filter(days_on__in=new_dict[key])
+            elif key == 'for-af':
+                self.hdds = self.hdds.filter(f_form_factor__form_factor_name__in=new_dict[key])
+            elif key == 'spe-af':
+                self.hdds = self.hdds.filter(f_speed__speed_name__in=new_dict[key])
+            elif key == 'mod-af':
+                self.hdds = self.hdds.filter(f_hdd_models__hdd_models_name__in=new_dict[key])
+            elif key == 'hp-af':
+                self.hdds = self.hdds.filter(health__in=new_dict[key])
+            elif key == 'ser-af':
+                self.hdds = self.hdds.filter(hdd_serial__in=new_dict[key])
+            self.autoFilters = HddAutoFilterOptions(self.hdds)
+
+
+class HddOrderContentHolder:
+
+    def __init__(self, index):
+        self.hdd_order = HddOrder.objects.get(order_id=index)
+        self.hdds = Hdds.objects.filter(f_order=self.hdd_order)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
 
@@ -647,50 +753,22 @@ class TarProcessor:
         return form_factor_to_return
 
 
-class TarAndLogHandler(PatternMatchingEventHandler):
-    patterns = ['*.tar']
-
-    def process(self, event):
-        logging.debug(event.src_path)
-        logging.debug(event.event_type)
-        index = 0
-        tp = TarProcessor(event.src_path, os.path.basename(event.src_path).replace('.tar', ''))
-        tp.process_data()
-        logging.debug(index)
-        logging.debug('_________________________________________')
-
-    def on_created(self, event):
-        if not event.is_directory:
-            self.process(event)
-
-
-def start_observer():
-    observer = Observer()
-    log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
-    logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
-    # observer.schedule(TarAndLogHandler(), '/home/sopenaclient/Desktop/django_project/hdd_server/temp')
-    observer.schedule(TarAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
-    logging.debug("Start of observer")
-    observer.start()
-    try:
-        while True:
-            time.sleep(10)
-    except KeyboardInterrupt:
-        logging.debug('Ending observer, due to keyboard interupt')
-        observer.stop()
-        logging.debug('Observer ended')
-    observer.join()
-
 
 class PDFViewer:
 
     def __init__(self, pk):
-        hdd = Hdds.objects.get(hdd_id=pk)
-        tf = tarfile.open(os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), hdd.f_lot.lot_name + '.tar'))
-        tarmember = tf.getmember(hdd.tar_member_name)
-        pdf = tf.extractfile(tarmember)
-        pdf_content = pdf.read()
-        self.pdf_content = pdf_content
+        self.success = False
+        try:
+            hdd = Hdds.objects.get(hdd_id=pk)
+            tf = tarfile.open(os.path.join(os.path.join(settings.BASE_DIR, 'tarfiles'), hdd.f_lot.lot_name + '.tar'))
+            tarmember = tf.getmember(hdd.tar_member_name)
+            pdf = tf.extractfile(tarmember)
+            pdf_content = pdf.read()
+            self.pdf_content = pdf_content
+            self.success = True
+        except:
+            pass
+
 
 class HddOrderProcessor:
 
@@ -822,6 +900,7 @@ class HddOrdersHolder:
                 for order in self.orders[:]:
                     if not str(order.count) in new_dict[key]:
                         self.orders.remove(order)
+        self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
     def set_orders(self):
         orders = HddOrder.objects.all()

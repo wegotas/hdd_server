@@ -215,6 +215,10 @@ function lot_content(index) {
   var contentWindow = window.open('content/'+index+'/', "", "width=1100,height=650");
 }
 
+function hdd_order_content(index) {
+  var hddOrderContentWindow = window.open('hdd_order_content/'+index+'/', "", "width=1100,height=650");
+}
+
 function editHdd(index, URLremovalToken) {
 	URLtoWorkWith = location.href.slice(0, -1);
 	parts = URLtoWorkWith.split('/');
@@ -290,7 +294,7 @@ function deleteHddFromIndex(index) {
   } 
 }
 
-function viewPDF(index) {
+function viewPDFfromIndex(index) {
   URLtoWorkWith = location.href;
   parts = URLtoWorkWith.split('/');
   parts.pop();
@@ -301,11 +305,18 @@ function viewPDF(index) {
   var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
 }
 
-function importNewOrder(URLremovalToken) {
+function viewPDFfromHddEdit(index) {
+  URLtoWorkWith = location.href;
+  URLtoWorkWith = URLtoWorkWith.replace('/hdd_edit/', '/view_pdf/');
+  console.log(URLtoWorkWith);
+  var pdfWindow = window.open(URLtoWorkWith, "", "width=700,height=800");
+}
+
+function importNewHddOrder(URLremovalToken) {
   URLtoWorkWith = location.href;
   parts = URLtoWorkWith.split('/');
   for (var i =0; i<URLremovalToken; i++) {
     parts.pop();
   }
-  var importOrderWindow = window.open(parts.join('/') + '/new_order/', "", "width=360,height=100");
+  var importOrderWindow = window.open(parts.join('/') + '/new_hdd_order/', "", "width=360,height=100");
 }

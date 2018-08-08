@@ -11,6 +11,19 @@ import tarfile
 
 
 @csrf_exempt
+def hdd_order_content(request, int_index):
+    print(int_index)
+    print('hdd_order_edit')
+    hoch = HddOrderContentHolder(int_index)
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        hoch.filter(request.GET.copy())
+        return render(request, 'hdd_order_content.html', {'hoch': hoch})
+
+
+@csrf_exempt
 def lot_content(request, int_index):
     if request.method == 'POST':
         print('POST method')
@@ -142,7 +155,7 @@ def hdd_order(request):
             print("Valid")
             hop = HddOrderProcessor(request.FILES['document'])
             if hop.message != '':
-                return render(request, 'failure.html', {'message': op.message})
+                return render(request, 'failure.html', {'message': hop.message})
             else:
                 return render(request, 'success.html')
         else:
@@ -161,4 +174,7 @@ def view_pdf(request, int_index):
         print('POST request')
     elif request.method == 'GET':
         print('GET request')
-        return HttpResponse(pv.pdf_content, content_type='application/pdf')
+        if pv.success:
+            return HttpResponse(pv.pdf_content, content_type='application/pdf')
+        else:
+            return render(request, 'failure.html', {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."})

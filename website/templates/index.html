@@ -115,7 +115,9 @@
                 <td>{{ lot.lot_name }}</td>
                 <td>{{ lot.date_of_lot|date:"c" }}</td>
                 <td>{{ lot.count }}</td>
-                <td><button type="button" onclick="lot_content({{ lot.lot_id }})">Content</button></td>
+                <td>
+                    <button type="button" onclick="lot_content({{ lot.lot_id }})">Content</button>
+                </td>
             </tr>
             {% endfor %}
         </table>
@@ -493,6 +495,7 @@
                 <td>{{ order.count }}</td>
                 <td>
                     <button type="button" onclick="hdd_order_content({{ order.order_id }})">Content</button>
+                    <button type="button" onclick="hdd_delete_order({{ order.order_id }})">Delete</button>
                 </td>
             </tr>
             {% endfor %}

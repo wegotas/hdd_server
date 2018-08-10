@@ -24,6 +24,17 @@ def hdd_order_content(request, int_index):
 
 
 @csrf_exempt
+def hdd_delete_order(request, int_index):
+    print(int_index)
+    if request.method == 'POST':
+        print('POST method')
+    if request.method == 'GET':
+        print('GET method')
+        hod = HddOrderToDelete(int_index)
+        hod.delete()
+
+
+@csrf_exempt
 def lot_content(request, int_index):
     if request.method == 'POST':
         print('POST method')

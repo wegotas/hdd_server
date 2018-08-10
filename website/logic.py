@@ -426,6 +426,18 @@ class LotContentHolder:
             self.autoFilters = HddAutoFilterOptions(self.hdds)
 
 
+class HddOrderToDelete:
+
+    def __init__(self, index):
+        self.message = ''
+        self.order = HddOrder.objects.get(order_id=index)
+        self.hdds = Hdds.objects.filter(f_order=self.order)
+
+    def delete(self):
+        self.hdds.update(f_order=None)
+        self.order.delete()
+
+
 class HddOrderContentHolder:
 
     def __init__(self, index):

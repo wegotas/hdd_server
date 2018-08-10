@@ -215,6 +215,10 @@ function lot_content(index) {
   var contentWindow = window.open('content/'+index+'/', "", "width=1100,height=650");
 }
 
+function hdd_delete_order(index) {
+  var contentWindow = window.open('hdd_delete_order/'+index+'/', "", "width=1100,height=650");
+}
+
 function hdd_order_content(index) {
   var hddOrderContentWindow = window.open('hdd_order_content/'+index+'/', "", "width=1100,height=650");
 }

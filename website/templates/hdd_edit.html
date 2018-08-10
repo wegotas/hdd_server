@@ -105,6 +105,18 @@
                     <input type="text" name="days" value="{{ hte.hdd.days_on }}" onkeypress="return isNumber(event)">
                 </td>
             </tr>
+            <tr>
+                <td align="right">Lot:</td>
+                <td>
+                    <input type="text" name="lot" value="{{ hte.hdd.f_lot.lot_name }}" disabled>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">Order:</td>
+                <td>
+                    <input type="text" name="order" value="{{ hte.hdd.f_order.order_name }}" disabled>
+                </td>
+            </tr>
         </table>
     </form>
 </body>

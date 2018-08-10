@@ -177,4 +177,4 @@ def view_pdf(request, int_index):
         if pv.success:
             return HttpResponse(pv.pdf_content, content_type='application/pdf')
         else:
-            return render(request, 'failure.html', {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."})
+            return render(request, 'failure.html', {'message': "Failed to fetch pdf.\r\nMost likely cause is that pdf is nonexistant."}, status=404)

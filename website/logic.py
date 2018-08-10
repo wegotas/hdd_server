@@ -12,13 +12,14 @@ import datetime
 from subprocess import call
 
 
-
 def on_start():
     print("on start")
     if os.environ['RUN_ON_START']:
         os.environ['RUN_ON_START'] = 'False'
-        tid = Thread(target=start_tar_observer)
-        tid.start()
+        tarThread = Thread(target=start_tar_observer)
+        tarThread.start()
+        txtThread = Thread(target=start_txt_observer)
+        txtThread.start()
 
 
 def start_tar_observer():
@@ -26,7 +27,7 @@ def start_tar_observer():
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
     logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
     observer.schedule(TarAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
-    logging.debug("Start of observer")
+    logging.debug("Start of tar observer")
     observer.start()
     try:
         while True:
@@ -60,7 +61,7 @@ def start_txt_observer():
     log_position = os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'observer.log')
     logging.basicConfig(filename=log_position, level=logging.DEBUG, format="%(asctime)-15s %(threadName)s:%(message)s")
     observer.schedule(TxtAndLogHandler(), os.path.join(os.path.join(settings.BASE_DIR, 'temp')))
-    logging.debug("Start of observer")
+    logging.debug("Start of txt observer")
     observer.start()
     try:
         while True:
@@ -80,6 +81,7 @@ class TxtAndLogHandler(PatternMatchingEventHandler):
         logging.debug(event.event_type)
         index = 0
         # WIP, NEED FINISHING
+        hop = HddOrderProcessor(event.src_path)
         logging.debug(index)
         logging.debug('_________________________________________')
 
@@ -584,10 +586,21 @@ class TarProcessor:
                                         if tarmember is not None:
                                             isMissing = True
                                             tarmember_to_remove = self.get_tarmember_name(line_array)
-                                            os.system('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
+                                            if tarmember_to_remove is not None:
+                                                print(type(tarmember_to_remove))
+                                                tarmember_to_remove = self.get_tarmember_name(line_array)
+                                                try:
+                                                    new_tar.getmember(tarmember_to_remove)
+                                                    os.system('tar -vf '+new_tarfile_loc+' --delete "'+tarmember_to_remove+'"')
+                                                    print('After deletion')
+                                                except:
+                                                    print('File opening or its deletion had failed')
+                                                    pass
                                             filename = tarmember.name
                                             file = self.tar.extractfile(tarmember)
                                             new_tar.addfile(tarmember, file)
+                                            print('Added tarmember:')
+                                            print(tarmember)
                                             self._update_existing_hdd(line_array, filename)
                                             textToWrite += 'SN: ' + line_array[1] + '| info updated. File updated.\r\n'
                                         else:
@@ -646,6 +659,7 @@ class TarProcessor:
         hdd.f_form_factor = form_factor
         hdd.health = line_array[7].replace("%", "")
         hdd.days_on = line_array[8]
+        hdd.f_lot = self.lot
         hdd.save()
 
     def _update_existing_hdd(self, line_array, filename):
@@ -662,6 +676,7 @@ class TarProcessor:
         hdd.health = line_array[7].replace("%", "")
         hdd.days_on = line_array[8]
         hdd.tar_member_name = filename
+        hdd.f_lot = self.lot
         hdd.save()
 
     def _save_new_hdd(self, line_array, filename):
@@ -753,7 +768,6 @@ class TarProcessor:
         return form_factor_to_return
 
 
-
 class PDFViewer:
 
     def __init__(self, pk):
@@ -774,12 +788,23 @@ class HddOrderProcessor:
 
     def __init__(self, txtObject):
         self.message = ''
-        hddOrder = self.get_hdd_order(txtObject._name)
+        print(type(txtObject))
+        print(txtObject)
+        if type(txtObject) is str:
+            filename = os.path.basename(txtObject)
+            txtObject = open(txtObject, "r")
+        else:
+            filename = txtObject._name
+        hddOrder = self.get_hdd_order(filename)
         with open(os.path.join(os.path.join(settings.BASE_DIR, 'logs'), 'failed.log'), 'a') as logfile:
             isMissing = False
-            textToWrite = '* importing order ' + txtObject._name.replace('.txt', '')+ ' || ' + str(datetime.date.today()) + ' *\r\n'
+            textToWrite = '* importing order ' + filename.replace('.txt', '')+ ' || ' + str(datetime.date.today()) + ' *\r\n'
             for line in txtObject.readlines():
-                line_array = line.decode('utf-8').split('@')
+                try:
+                    line = line.decode('utf-8')
+                except:
+                    pass
+                line_array = line.split('@')
                 if self.isValid(line_array):
                     model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]
                     hdds = Hdds.objects.filter(hdd_serial=line_array[1], f_hdd_models=model)
@@ -787,7 +812,6 @@ class HddOrderProcessor:
                         if hdds[0].f_order is not None:
                             isMissing = True
                             textToWrite += 'SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name
-                            # print('SN: ' + hdds[0].hdd_serial + '| had order asign. Was assigned to order ' + hdds[0].f_order.order_name)
                         hdds.update(f_order=hddOrder)
                     else:
                         model = HddModels.objects.get_or_create(hdd_models_name=line_array[2])[0]

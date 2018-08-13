@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Hdd order content</title>
@@ -9,14 +9,27 @@
     <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
 </head>
 <body>
-    <form>
+    <form method="post">
         <div class="header">
             <div class="textdiv">Hdd order id: {{ hoch.hdd_order.order_id }}</div>
             <div class="textdiv">Hdd order name: {{ hoch.hdd_order.order_name }}</div>
-            <div class="textdiv">Date {{ hoch.hdd_order.date_of_order|date:"c" }}</div>
+            <div class="textdiv">Date: {{ hoch.hdd_order.date_of_order|date:"c" }}</div>
+            <div class="textdiv">Status:
+                <select id="status_selection" name="status_name">
+                    {% for item in hoch.available_statuses %}
+                    <option value="{{ item.order_status_name }}"{% if item.order_status_name == hoch.hdd_order.f_order_status.order_status_name %} selected="selected"{% endif %}>{{ item.order_status_name }}</option>
+                    {% endfor %}
+                </select>
+                <input id="other_checkbox" type="checkbox" onclick="hddOrderOtherCheck(this)"{% if hoch.hdd_order.f_order_status.is_shown == 0 %} checked{% endif %}>
+                <input id="other_selection" type="text" name="other_name" placeholder="other" {% if hoch.hdd_order.f_order_status.is_shown == 0 %} value="{{ hoch.hdd_order.f_order_status.order_status_name }}" {% endif %}disabled>
+            </div>
+            <br><br><br>
         </div>
         <div class="tableDiv">
-            <div class="item"><button type="button" class="button img-button" onclick="applyAFs()">Filter</button></div>
+            <div class="item">
+                <button type="button" class="button img-button" onclick="applyAFs()">Filter</button>
+                <input type="submit">
+            </div>
             <table class="mainTable">
                 <tr>
                     <th>Serial{% if 'ser-af' in hoch.changedKeys %}*{% endif %}

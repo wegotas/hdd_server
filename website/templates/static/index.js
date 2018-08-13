@@ -149,6 +149,7 @@ window.onload = function() {load()}
 
 function load() {
   collectSelectedAF();
+  lockStatuses();
 }
 
 function collectSelectedAF() {
@@ -272,7 +273,6 @@ function deleteHddFromHddEdit(index) {
 	}
 }
 
-
 function deleteHddFromIndex(index) {
  if (confirm('Do you really want to delete this hdd?')) {
     URLtoWorkWith = location.href;
@@ -323,4 +323,18 @@ function importNewHddOrder(URLremovalToken) {
     parts.pop();
   }
   var importOrderWindow = window.open(parts.join('/') + '/new_hdd_order/', "", "width=360,height=100");
+}
+
+function hddOrderOtherCheck(checkbox) {
+  statusSelection = document.getElementById('status_selection');
+  statusSelection.disabled = checkbox.checked;
+  otherSelection = document.getElementById('other_selection');
+  otherSelection.disabled = !(checkbox.checked)
+}
+
+function lockStatuses() {
+  checkbox = document.getElementById('other_checkbox');
+  if (checkbox) {
+    hddOrderOtherCheck(checkbox);
+  }
 }

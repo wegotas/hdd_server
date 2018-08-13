@@ -17,6 +17,7 @@ def hdd_order_content(request, int_index):
     hoch = HddOrderContentHolder(int_index)
     if request.method == 'POST':
         print('POST method')
+        hoch.edit(request.POST.copy())
     if request.method == 'GET':
         print('GET method')
         hoch.filter(request.GET.copy())

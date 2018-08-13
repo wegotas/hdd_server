@@ -445,17 +445,15 @@ class HddOrderContentHolder:
         self.hdds = Hdds.objects.filter(f_order=self.hdd_order)
         self.autoFilters = HddAutoFilterOptions(self.hdds)
         self.changedKeys = []
+        self.available_statuses = OrderStatus.objects.filter(is_shown=1)
 
     def filter(self, data_dict):
-        # print(data_dict)
         keys = ('siz-af', 'loc-af', 'day-af', 'for-af', 'spe-af', 'mod-af', 'hp-af', 'ser-af')
         new_dict = {}
         for key in keys:
             if key in data_dict:
                 new_dict[key] = data_dict.pop(key)
-        # print(new_dict)
         for key, value in new_dict.items():
-            # print(key + ' ' + str(value))
             self.changedKeys.append(key)
             if key == 'siz-af':
                 self.hdds = self.hdds.filter(f_hdd_sizes__hdd_sizes_name__in=new_dict[key])
@@ -474,6 +472,33 @@ class HddOrderContentHolder:
             elif key == 'ser-af':
                 self.hdds = self.hdds.filter(hdd_serial__in=new_dict[key])
             self.autoFilters = HddAutoFilterOptions(self.hdds)
+
+    def edit(self, data_dict):
+        print(data_dict)
+        order = self._get_order(data_dict)
+        if order:
+            old_order = self.hdd_order.f_order_status
+            self.hdd_order.f_order_status = order
+            self.hdd_order.save()
+            if not HddOrder.objects.filter(f_order_status=old_order).exists():
+                if old_order.is_shown == 0:
+                    old_order.delete()
+
+    def _get_order(self, data_dict):
+        if 'status_name' in data_dict:
+            print('status_name')
+            print(data_dict['status_name'])
+            return OrderStatus.objects.filter(order_status_name=data_dict['status_name'])[0]
+        elif 'other_name' in data_dict:
+            print('other_name')
+            print(data_dict['other_name'])
+            newOrderStatus = OrderStatus(
+                order_status_name=data_dict['other_name'],
+                is_shown=0
+            )
+            newOrderStatus.save()
+            return newOrderStatus
+        return None
 
 
 class HddToEdit:
@@ -859,10 +884,12 @@ class HddOrderProcessor:
             hdds = Hdds.objects.filter(f_order=hddOrders[0].order_id)
             hdds.update(f_order=None)
             hddOrders[0].delete()
+        orderStatus = OrderStatus.objects.get(order_status_id=3)
+        print(orderStatus)
         hddOrder = HddOrder(
             order_name=txtFileName.replace('.txt', ''),
             date_of_order=timezone.now().today().date(),
-            is_sold=0
+            f_order_status=orderStatus
         )
         hddOrder.save()
         return hddOrder
@@ -870,11 +897,11 @@ class HddOrderProcessor:
 
 class HddOrderHolder:
 
-    def __init__(self, order_id, order_name, date_of_order, is_sold, count):
+    def __init__(self, order_id, order_name, date_of_order, order_status_name, count):
         self.order_id = order_id
         self.order_name = order_name
         self.date_of_order = date_of_order
-        self.is_sold = is_sold
+        self.order_status_name = order_status_name
         self.count = count
 
 
@@ -883,19 +910,19 @@ class HddOrdersHolderAutoFilter:
     def __init__(self, orders):
         self.orders_names = []
         self.dates_of_orders = []
-        self.are_sold = []
+        self.order_status_names = []
         self.counts = []
         for order in orders:
             self.orders_names.append(order.order_name)
             self.dates_of_orders.append(order.date_of_order)
-            self.are_sold.append(order.is_sold)
+            self.order_status_names.append(order.order_status_name)
             self.counts.append(order.count)
         self.orders_names = list(set(self.orders_names))
         self.orders_names.sort()
         self.dates_of_orders = list(set(self.dates_of_orders))
         self.dates_of_orders.sort()
-        self.are_sold = list(set(self.are_sold))
-        self.are_sold.sort()
+        self.order_status_names = list(set(self.order_status_names))
+        self.order_status_names.sort()
         self.counts = list(set(self.counts))
         self.counts.sort()
 
@@ -913,7 +940,7 @@ class HddOrdersHolder:
 
     def filter(self, data_dict):
         # print(data_dict)
-        keys = ('hon-af', 'dat-af', 'cnt-af')
+        keys = ('hon-af', 'dat-af', 'cnt-af', 'ost-af')
         new_dict = {}
         for key in keys:
             if key in data_dict:
@@ -936,6 +963,11 @@ class HddOrdersHolder:
                 for order in self.orders[:]:
                     if not str(order.count) in new_dict[key]:
                         self.orders.remove(order)
+            elif key == 'ost-af':
+                print('It is ost-af')
+                for order in self.orders[:]:
+                    if not str(order.order_status_name) in new_dict[key]:
+                        self.orders.remove(order)
         self.autoFilters = HddOrdersHolderAutoFilter(self.orders)
 
     def set_orders(self):
@@ -943,5 +975,5 @@ class HddOrdersHolder:
         self.orders = []
         for order in orders:
             count = Hdds.objects.filter(f_order=order).count()
-            oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.is_sold, count)
+            oh = HddOrderHolder(order.order_id, order.order_name, order.date_of_order, order.f_order_status.order_status_name, count)
             self.orders.append(oh)

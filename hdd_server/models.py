@@ -31,7 +31,7 @@ class HddOrder(models.Model):
     order_id = models.AutoField(primary_key=True)
     order_name = models.CharField(max_length=45)
     date_of_order = models.DateField(blank=True, null=True)
-    is_sold = models.IntegerField()
+    f_order_status = models.ForeignKey('OrderStatus', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -83,6 +83,16 @@ class Lots(models.Model):
     class Meta:
         managed = True
         db_table = 'Lots'
+
+
+class OrderStatus(models.Model):
+    order_status_id = models.AutoField(primary_key=True)
+    order_status_name = models.CharField(max_length=500)
+    is_shown = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'Order_status'
 
 
 class Speed(models.Model):
